@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>小昕斗地主</title>
+    <link rel="stylesheet" href="css/transparentContainer.css">
+
+    <script src="js/CardMapping.js"></script>
+    <script src="js/Card.js"></script>
+
+    <style>
+        html
+        {
+            width: 100%;
+            height: 100%;
+            font-size: 62.5%;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        body 
+        {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            background: #000;
+            color: #DDD;
+            font-family: 'Helvetica', 'Lucida Grande', 'Arial', sans-serif;
+            position: relative;
+        }
+        div[class='transparentContainer']
+        {
+            width: 8rem;
+            height: 13rem;
+            /* position: relative; */
+            /* left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%); */
+        }
+        /*花色和数字符号*/
+        div[class='transparentContainer'] span
+        {
+            font-size: 2rem;
+        }
+        /*纸牌中心的花色符号*/
+        div[class='transparentContainer'] i
+        {
+            font-size: 8rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <script>
+        let body = document.getElementsByTagName('body')[0];
+        // let card = new Card(8, '3', body);
+
+        let left = 10;
+        for(let i=0; i<=16; i++)
+        {
+            let num = Math.floor(Math.random()*13) + 1;
+            let type = Math.floor(Math.random()*4);
+            let card = new Card(num, type.toString(), body);
+            card.style.bottom = '10%';
+            card.style.left = left + '%';
+            left = left + 5;
+        }
+    </script>
+</body>
+
+</html>
