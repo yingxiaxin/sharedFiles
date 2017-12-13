@@ -17,7 +17,8 @@ class PlayUI
         this.removeAllCards(container);
         Array.prototype.sort.call(cardList, GameRule.cardSort);
 
-        let left = 0;
+        let left = 0,
+            top = 0;
         let overlapFactor = 0.75;   //两张牌不重叠的宽度比例
         for(let i=0; i<cardList.length; i++)
         {
