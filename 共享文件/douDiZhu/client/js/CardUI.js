@@ -71,34 +71,43 @@ class CardUI
 
         instanceDiv.appendChild(midTag);
         
-        instanceDiv.setAttribute('class', 'transparentContainer');
+        instanceDiv.setAttribute('class', 'card');
 
-        if(this.parentContainer != null && typeof(this.parentContainer) != 'undefined')
-        {
-            this.parentContainer.appendChild(instanceDiv);
-        }
+        // if(this.parentContainer != null && typeof(this.parentContainer) != 'undefined')
+        // {
+        //     this.parentContainer.appendChild(instanceDiv);
+        // }
 
-        this.instance = instanceDiv;
+        this.domInstance = instanceDiv;
 
-        this.instance.onclick = ()=>{
+        this.domInstance.onclick = ()=>{
             this.toggleSelected();
+            this.setDominstanceAttr();
+
+            window.console.log(this);
         };
 
-        return this.instance;
     }
 
     toggleSelected()
     {
         if(this.selected == false)
         {
-            this.instance.style.top = '10%;';
+            this.domInstance.style.transform = 'translateY(-3rem)';
             this.selected = true;
         }
         else
         {
-            this.instance.style.transform = 'translateY(0, 20px);';
+            this.domInstance.style.transform = 'translateY(0)';
             this.selected = false;
         }
+    }
+
+    setDominstanceAttr()
+    {
+        this.domInstance.setAttribute('type', this.cardType);
+        this.domInstance.setAttribute('val', this.cardNum);
+        this.domInstance.setAttribute('selected', this.selected);
     }
 }
 

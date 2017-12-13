@@ -4,11 +4,15 @@
 <head>
     <meta charset="utf-8" />
     <title>小昕斗地主</title>
-    <link rel="stylesheet" href="css/transparentContainer.css">
+    <link rel="stylesheet" href="css/card.css">
 
+    <script src="js/start.js"></script>
     <script src="js/CardMapping.js"></script>
     <script src="js/CardUI.js"></script>
     <script src="js/CardData.js"></script>
+    <script src="js/GameRule.js"></script>
+    <script src="js/PlayUI.js"></script>
+    <script src="js/Player.js"></script>
 
     <style>
         html
@@ -111,18 +115,18 @@
             outline: none;
         }
 
-        div[class='transparentContainer']
+        div[class='card']
         {
             width: 8rem;
             height: 13rem;
         }
         /*花色和数字符号*/
-        div[class='transparentContainer'] span
+        div[class='card'] span
         {
             font-size: 2rem;
         }
         /*纸牌中心的花色符号*/
-        div[class='transparentContainer'] i
+        div[class='card'] i
         {
             font-size: 8rem;
         }
@@ -157,22 +161,49 @@
     </button>
 
     <script>
+        G.init();
         let body = document.getElementsByTagName('body')[0];
         let con = document.getElementsByClassName('player')[0];
-        // let card = new CardUI(8, '3', body);
+        let newcard = CardData.getNewCard();
 
-        let left = 7;
-        for(let i=0; i<=16; i++)
+        let p1 = new Player('A'),
+            p2 = new Player('B'),
+            p3 = new Player('C');
+
+        let playercard = randomArrayItem(newcard, 17, []);
+
+        // let left = 7;
+        // for(let i=0; i<playercard.length; i++)
+        // {
+        //     let num = playercard[i].val;
+        //     let type = playercard[i].type;
+        //     let card = new CardUI(num, type.toString(), con);
+
+        //     con.appendChild(card.domInstance);
+        //     // card.domInstance.style.bottom = '6%';
+        //     card.domInstance.style.left = left + '%';
+        //     left = left + 5;
+        // }
+
+        let play = new PlayUI();
+        play.renderCards(G.ownPlayerContainer, playercard);
+
+        
+
+        function randomArrayItem(array, num, targetArray)
         {
-            let num = Math.floor(Math.random()*13) + 1;
-            let type = Math.floor(Math.random()*4);
-            let card = new CardUI(num, type.toString(), con);
-            card.style.bottom = '6%';
-            card.style.left = left + '%';
-            left = left + 5;
+            let len = array.length;
+            if(targetArray.length < num)
+            {
+                let deleteIndex = Math.floor(Math.random()*len);
+                let item = array[deleteIndex];
+                let rstArray = Array.prototype.splice.call(array, deleteIndex, 1);
+                targetArray.push(item);
+                randomArrayItem(array, num, targetArray);
+            }
+            return targetArray;
         }
 
-        let array = CardData.getNewCard();
     </script>
 </body>
 
