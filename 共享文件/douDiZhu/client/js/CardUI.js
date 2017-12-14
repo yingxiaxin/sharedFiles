@@ -83,8 +83,6 @@ class CardUI
         this.domInstance.onclick = ()=>{
             this.toggleSelected();
             this.setDominstanceAttr();
-
-            window.console.log(this);
         };
 
     }

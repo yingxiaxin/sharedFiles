@@ -23,6 +23,7 @@
             padding: 0;
             margin: 0;
             box-sizing: border-box;
+            cursor: pointer;
         }
         body 
         {
@@ -161,48 +162,15 @@
     </button>
 
     <script>
+
         G.init();
-        let body = document.getElementsByTagName('body')[0];
-        let con = document.getElementsByClassName('player')[0];
+
         let newcard = CardData.getNewCard();
 
-        let p1 = new Player('A'),
-            p2 = new Player('B'),
-            p3 = new Player('C');
-
-        let playercard = randomArrayItem(newcard, 17, []);
-
-        // let left = 7;
-        // for(let i=0; i<playercard.length; i++)
-        // {
-        //     let num = playercard[i].val;
-        //     let type = playercard[i].type;
-        //     let card = new CardUI(num, type.toString(), con);
-
-        //     con.appendChild(card.domInstance);
-        //     // card.domInstance.style.bottom = '6%';
-        //     card.domInstance.style.left = left + '%';
-        //     left = left + 5;
-        // }
-
         let play = new PlayUI();
-        play.renderCards(G.ownPlayerContainer, playercard);
-
-        
-
-        function randomArrayItem(array, num, targetArray)
-        {
-            let len = array.length;
-            if(targetArray.length < num)
-            {
-                let deleteIndex = Math.floor(Math.random()*len);
-                let item = array[deleteIndex];
-                let rstArray = Array.prototype.splice.call(array, deleteIndex, 1);
-                targetArray.push(item);
-                randomArrayItem(array, num, targetArray);
-            }
-            return targetArray;
-        }
+        play.initPlayers();
+        play.shuffleNewCardList();
+        play.dealCards(play.cardList);
 
     </script>
 </body>
