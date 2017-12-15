@@ -16,6 +16,10 @@ class PlayUI
         }
 
         this.enableRightClick();
+        this.playerStateGenerator = null;
+        this.leftPlayer = null;
+        this.rightPlayer = null;
+        this.ownPlayer = null;
     }
 
     /**
@@ -76,7 +80,6 @@ class PlayUI
                     break;
                 }
             }
-            
         }
     }
 
@@ -121,7 +124,7 @@ class PlayUI
     }
 
     dealCards(cardList)
-    {                
+    {
         let [player1, player2, player3] = G.players;
         let self = this;
         
@@ -244,12 +247,62 @@ class PlayUI
     initPlayers()
     {
         let p1 = new Player('A'),
-        p2 = new Player('B'),
-        p3 = new Player('C');
+            p2 = new Player('B'),
+            p3 = new Player('C');
 
         p1.isOwn = true;
 
         G.players = [p1, p2, p3];
+
+        let flag = GameRule.random(0,2);
+        this.setCurrentPlayer(G.players[flag]);
+
+        let generator = function* ()
+        {
+            while(1)
+            {
+                yield G.players[0];
+                yield G.players[1];
+                yield G.plyaers[2];
+            }
+        };
+        this.playerStateGenerator = generator();
+    }
+
+    setPlayerOrder()
+    {
+        
+    }
+
+    nextPlayer()
+    {
+        let p = this.playerStateGenerator.next().value;
+        return p;
+    }
+
+    setCurrentPlayer(player)
+    {
+        let flag = true;
+        while(flag)
+        {
+            let p = this.nextPlayer();
+            if(p.name == player.name && p.uuid == player.uuid)
+            {
+                p.isCurrentPlayer = true;
+            }
+        }
+    }
+
+    getCurrentPlayer()
+    {
+        let players = G.players;
+        for(let p of players)
+        {
+            if(p.isCurrentPlayer == true)
+            {
+                return p;
+            }
+        }
     }
 
     disableClick(container, clicktype)
