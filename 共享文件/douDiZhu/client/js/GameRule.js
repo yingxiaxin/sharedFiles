@@ -431,3 +431,6 @@ GameRule.MSG_NO_ROB_RESTART = '没人叫地主，重新发牌';
 GameRule.DESK_STATUS_READY = 1;
 GameRule.DESK_STATUS_ROB = 2;
 GameRule.DESK_STATUS_PLAY = 3;
+
+
+export default GameRule;

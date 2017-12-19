@@ -60,3 +60,5 @@ CardData.data = [{iconPos: 'j1.jpg', type: '0', val: 17},
     {iconPos: 'k11.jpg', type: '4', val: 11},
     {iconPos: 'k12.jpg', type: '4', val: 12},
     {iconPos: 'k13.jpg', type: '4', val: 13}];
+
+    export default CardData;

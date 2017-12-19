@@ -1,5 +1,5 @@
-window.G = {};
-G.init = function()
+let G = window.G = {};
+window.G.init = function()
 {
     let leftPlayerContainer = document.getElementsByClassName('leftPlayer')[0];
     let rightPlayerContainer = document.getElementsByClassName('rightPlayer')[0];
@@ -29,4 +29,6 @@ G.init = function()
     G.DEALCARD_RATE = 100;  //发牌的快慢速率，默认100毫秒
 
     G.players = [];
-}
+};
+
+export default G;

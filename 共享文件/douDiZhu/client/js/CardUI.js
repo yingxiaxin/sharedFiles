@@ -1,4 +1,4 @@
-// import CardMapping from './CardMapping';
+import CardMapping from './CardMapping';
 
 class CardUI
 {
@@ -109,4 +109,4 @@ class CardUI
     }
 }
 
-// export default CardUI;
+export default CardUI;

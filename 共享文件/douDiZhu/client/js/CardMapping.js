@@ -44,3 +44,6 @@ CardMapping.typeMap.set('2', fangkuai);
 CardMapping.typeMap.set('3', heitao);
 CardMapping.typeMap.set('4', meihua);
 CardMapping.typeMap.set('0', wang);
+
+
+export default CardMapping;

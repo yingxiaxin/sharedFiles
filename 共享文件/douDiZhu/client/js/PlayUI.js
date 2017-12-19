@@ -1,5 +1,8 @@
-// import GameRule from './GameRule';
-// import CardUI from './CardUI';
+import GameRule from './GameRule';
+import CardUI from './CardUI';
+import G from './start';
+import CardData from './CardData';
+import Player from './Player';
 
 class PlayUI
 {
@@ -111,7 +114,6 @@ class PlayUI
     randomShuffleCards(array, num, targetArray)
     {
         let len = array.length;
-        let self = this;
         if(targetArray.length < num)
         {
             let deleteIndex = Math.floor(Math.random()*len);
@@ -255,7 +257,6 @@ class PlayUI
         G.players = [p1, p2, p3];
 
         let flag = GameRule.random(0,2);
-        this.setCurrentPlayer(G.players[flag]);
 
         let generator = function* ()
         {
@@ -263,10 +264,12 @@ class PlayUI
             {
                 yield G.players[0];
                 yield G.players[1];
-                yield G.plyaers[2];
+                yield G.players[2];
             }
         };
         this.playerStateGenerator = generator();
+
+        // this.setCurrentPlayer(G.players[flag]);
     }
 
     setPlayerOrder()
@@ -326,3 +329,5 @@ class PlayUI
     }
 
 }
+
+export default PlayUI;

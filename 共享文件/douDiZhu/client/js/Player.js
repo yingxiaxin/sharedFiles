@@ -14,3 +14,5 @@ class Player
         this.isCurrentPlayer = false;
     }
 }
+
+export default Player;

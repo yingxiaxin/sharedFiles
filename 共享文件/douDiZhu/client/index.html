@@ -6,13 +6,9 @@
     <title>小昕斗地主</title>
     <link rel="stylesheet" href="css/card.css">
 
-    <script src="js/start.js"></script>
-    <script src="js/CardMapping.js"></script>
-    <script src="js/CardUI.js"></script>
-    <script src="js/CardData.js"></script>
-    <script src="js/GameRule.js"></script>
-    <script src="js/PlayUI.js"></script>
-    <script src="js/Player.js"></script>
+    <!-- <script src="../build/main.bundle.js"></script> -->
+    <script src="./build/main.bundle.js"></script>
+
 
     <style>
         html
@@ -161,18 +157,7 @@
         <p style="color:white; font-size:2rem; margin:0; padding:0">start</p>
     </button>
 
-    <script>
-
-        G.init();
-
-        let newcard = CardData.getNewCard();
-
-        let play = new PlayUI();
-        play.initPlayers();
-        play.shuffleNewCardList();
-        play.dealCards(play.cardList);
-
-    </script>
+    
 </body>
 
 </html>
