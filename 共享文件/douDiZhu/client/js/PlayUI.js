@@ -38,8 +38,8 @@ class PlayUI
 
         let left = 0,
             top = 0;
-        let overlapFactor = 0.75,
-            overlapFactor_TTB = 0.07;   //两张牌不重叠的宽度比例
+        let overlapFactor = G.OVERLAP_FACTOR,
+            overlapFactor_TTB = G.OVERLAP_FACTOR_TTB;   //两张牌不重叠的宽度比例
         for(let i=0; i<cardList.length; i++)
         {
             let num = cardList[i].val;
@@ -187,6 +187,7 @@ class PlayUI
                 clearInterval(itv);
                 this.renderCards(G.dipaiAreaContainer, cardList, G.PLAYER_CONTAINER_INSERT_DIRECTION_LTR);
                 this.disableClick(G.ownPlayerContainer, G.CONTAINER_CLICK);
+                // this.enableSwipeSelect();
             }
             else
             {
@@ -327,6 +328,86 @@ class PlayUI
             return false;
         });        
     }
+
+    /**
+     * 启用左键拖动选牌
+     */
+    enableSwipeSelect()
+    {
+        let dom = G.ownPlayerContainer;
+
+        let lastDownX = 0,
+            lastUpX = 0;
+
+        let cardArray = Array.from(dom.getElementsByClassName('card')),
+            firstCard = cardArray[0],
+            lastCard = cardArray[cardArray.length-1];
+
+        let cardwidth = firstCard.offsetWidth,
+            increment = cardwidth * G.OVERLAT_FACTOR;
+
+        dom.addEventListener('mousedown', function(e)
+        {
+            let m_x = e.clientX;
+
+            //div居中的时候经过了translate平移，translate平移不会改变offsetLeft和offsetTop的值，直接减offsetLeft不准
+            let x = m_x - (dom.offsetLeft - dom.offsetWidth/2);
+            lastDownX = x;
+        });
+
+        dom.addEventListener('mouseup', function(e)
+        {
+            let m_x = e.clientX;
+
+            //div居中的时候经过了translate平移，translate平移不会改变offsetLeft和offsetTop的值，直接减offsetLeft不准
+            let x = m_x - (dom.offsetLeft - dom.offsetWidth/2);
+            lastUpX = x;
+            
+            let swipeWidth = lastUpX - lastDownX;
+
+            let [qidian, zhongdian] = swipeWidth >= 0 ? [lastDownX, lastUpX] : [lastUpX, lastDownX];
+
+            if(zhongdian < firstCard.offsetLeft || qidian > firstCard.offsetRight)
+            {
+                return;
+            }
+            else
+            {
+                let qidian_index = (qidian - firstCard.offsetLeft)/increment;
+                if(qidian_index < 0)
+                {
+                    qidian_index = 0;
+                }
+                else
+                {
+                    qidian_index = Math.ceil(qidian_index);
+                }
+
+                let zhongdian_index = Math.ceil((qidian - firstCard.offsetLeft)/increment);
+                if(zhongdian_index > (cardArray.length-1))
+                {
+                    zhongdian_index = cardArray.length - 1;
+                }
+
+                typeof(firstCard);
+
+                for(let i=qidian_index; i<=zhongdian_index; i++)
+                {
+                    let dom = cardArray[i];
+
+                    // if()
+                }
+            }
+        });
+    }
+
+
+
+
+
+
+
+
 
 }
 

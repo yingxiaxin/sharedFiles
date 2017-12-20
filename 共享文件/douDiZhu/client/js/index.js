@@ -1,5 +1,5 @@
 import G from './start';
-import CardData from './CardData';
+// import CardData from './CardData';
 import PlayUI from './PlayUI';
 
 
@@ -16,12 +16,6 @@ function ready(fn)
         };
 
         document.addEventListener('DOMContentLoaded', addlistener, false);
-
-        // document.addEventListener('DOMContentLoaded', function()
-        // {
-        //     document.removeEventListener('DOMContentLoaded', arguments.callee, false);
-        //     fn();
-        // }, false);
     }
     else if(document.attachEvent)
     {
@@ -35,15 +29,6 @@ function ready(fn)
         };
 
         document.attachEvent('onreadystatechange', addlistener);
-
-        // document.attachEvent('onreadystatechange', function()
-        // {
-        //     if(document.readyState == 'complete')
-        //     {
-        //         document.detachEvent('onreadystatechange', arguments.callee)
-        //         fn();
-        //     }  
-        // });
     }
 }
 
@@ -51,13 +36,22 @@ function ready(fn)
 ready(function()
 {
     G.init();
-
-    let newcard = CardData.getNewCard();
-
+    // let newcard = CardData.getNewCard();
     let play = new PlayUI();
     play.initPlayers();
     play.shuffleNewCardList();
     play.dealCards(play.cardList);
+
+
+
+    let socket = io.connect('http://localhost:3000');
+    socket.on('news', function(data) 
+    {
+        console.log(data);
+        socket.emit('private_message', { my: 'data' });
+        console.log('emit private message');
+    });
+    
 });
 
 

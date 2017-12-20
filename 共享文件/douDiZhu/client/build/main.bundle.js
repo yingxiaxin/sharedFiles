@@ -699,6 +699,8 @@ window.G.init = function () {
     G.CONTAINER_NO_CLICK = 'none';
 
     G.DEALCARD_RATE = 100; //发牌的快慢速率，默认100毫秒
+    G.OVERLAP_FACTOR = 0.75; //玩家牌不重叠的宽度比例
+    G.OVERLAP_FACTOR_TTB = 0.07;
 
     G.players = [];
 };
@@ -1071,10 +1073,6 @@ var _start = __webpack_require__(32);
 
 var _start2 = _interopRequireDefault(_start);
 
-var _CardData = __webpack_require__(33);
-
-var _CardData2 = _interopRequireDefault(_CardData);
-
 var _PlayUI = __webpack_require__(57);
 
 var _PlayUI2 = _interopRequireDefault(_PlayUI);
@@ -1089,12 +1087,6 @@ function ready(fn) {
         };
 
         document.addEventListener('DOMContentLoaded', addlistener, false);
-
-        // document.addEventListener('DOMContentLoaded', function()
-        // {
-        //     document.removeEventListener('DOMContentLoaded', arguments.callee, false);
-        //     fn();
-        // }, false);
     } else if (document.attachEvent) {
         var _addlistener = function _addlistener() {
             if (document.readyState == 'complete') {
@@ -1104,27 +1096,25 @@ function ready(fn) {
         };
 
         document.attachEvent('onreadystatechange', _addlistener);
-
-        // document.attachEvent('onreadystatechange', function()
-        // {
-        //     if(document.readyState == 'complete')
-        //     {
-        //         document.detachEvent('onreadystatechange', arguments.callee)
-        //         fn();
-        //     }  
-        // });
     }
 }
+// import CardData from './CardData';
+
 
 ready(function () {
     _start2.default.init();
-
-    var newcard = _CardData2.default.getNewCard();
-
+    // let newcard = CardData.getNewCard();
     var play = new _PlayUI2.default();
     play.initPlayers();
     play.shuffleNewCardList();
     play.dealCards(play.cardList);
+
+    var socket = io.connect('http://localhost:3000');
+    socket.on('news', function (data) {
+        console.log(data);
+        socket.emit('private_message', { my: 'data' });
+        console.log('emit private message');
+    });
 });
 
 /***/ }),
@@ -1190,6 +1180,10 @@ module.exports = function (it, S) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+var _typeof2 = __webpack_require__(115);
+
+var _typeof3 = _interopRequireDefault(_typeof2);
 
 var _regenerator = __webpack_require__(58);
 
@@ -1296,8 +1290,8 @@ var PlayUI = function () {
 
             var left = 0,
                 top = 0;
-            var overlapFactor = 0.75,
-                overlapFactor_TTB = 0.07; //两张牌不重叠的宽度比例
+            var overlapFactor = _start2.default.OVERLAP_FACTOR,
+                overlapFactor_TTB = _start2.default.OVERLAP_FACTOR_TTB; //两张牌不重叠的宽度比例
             for (var i = 0; i < cardList.length; i++) {
                 var num = cardList[i].val;
                 var type = cardList[i].type;
@@ -1478,6 +1472,7 @@ var PlayUI = function () {
                     clearInterval(itv);
                     _this.renderCards(_start2.default.dipaiAreaContainer, cardList, _start2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR);
                     _this.disableClick(_start2.default.ownPlayerContainer, _start2.default.CONTAINER_CLICK);
+                    // this.enableSwipeSelect();
                 } else {
                     d.next();
                 }
@@ -1731,6 +1726,73 @@ var PlayUI = function () {
                 window.event.returnValue = false;
                 e.stopPropagation(); //阻止事件冒泡
                 return false;
+            });
+        }
+
+        /**
+         * 启用左键拖动选牌
+         */
+
+    }, {
+        key: 'enableSwipeSelect',
+        value: function enableSwipeSelect() {
+            var dom = _start2.default.ownPlayerContainer;
+
+            var lastDownX = 0,
+                lastUpX = 0;
+
+            var cardArray = (0, _from2.default)(dom.getElementsByClassName('card')),
+                firstCard = cardArray[0],
+                lastCard = cardArray[cardArray.length - 1];
+
+            var cardwidth = firstCard.offsetWidth,
+                increment = cardwidth * _start2.default.OVERLAT_FACTOR;
+
+            dom.addEventListener('mousedown', function (e) {
+                var m_x = e.clientX;
+
+                //div居中的时候经过了translate平移，translate平移不会改变offsetLeft和offsetTop的值，直接减offsetLeft不准
+                var x = m_x - (dom.offsetLeft - dom.offsetWidth / 2);
+                lastDownX = x;
+            });
+
+            dom.addEventListener('mouseup', function (e) {
+                var m_x = e.clientX;
+
+                //div居中的时候经过了translate平移，translate平移不会改变offsetLeft和offsetTop的值，直接减offsetLeft不准
+                var x = m_x - (dom.offsetLeft - dom.offsetWidth / 2);
+                lastUpX = x;
+
+                var swipeWidth = lastUpX - lastDownX;
+
+                var _ref = swipeWidth >= 0 ? [lastDownX, lastUpX] : [lastUpX, lastDownX],
+                    _ref2 = (0, _slicedToArray3.default)(_ref, 2),
+                    qidian = _ref2[0],
+                    zhongdian = _ref2[1];
+
+                if (zhongdian < firstCard.offsetLeft || qidian > firstCard.offsetRight) {
+                    return;
+                } else {
+                    var qidian_index = (qidian - firstCard.offsetLeft) / increment;
+                    if (qidian_index < 0) {
+                        qidian_index = 0;
+                    } else {
+                        qidian_index = Math.ceil(qidian_index);
+                    }
+
+                    var zhongdian_index = Math.ceil((qidian - firstCard.offsetLeft) / increment);
+                    if (zhongdian_index > cardArray.length - 1) {
+                        zhongdian_index = cardArray.length - 1;
+                    }
+
+                    typeof firstCard === 'undefined' ? 'undefined' : (0, _typeof3.default)(firstCard);
+
+                    for (var i = qidian_index; i <= zhongdian_index; i++) {
+                        var _dom = cardArray[i];
+
+                        // if()
+                    }
+                }
             });
         }
     }]);
@@ -4276,6 +4338,437 @@ var Player = function Player() {
 };
 
 exports.default = Player;
+
+/***/ }),
+/* 110 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports.f = __webpack_require__(0);
+
+
+/***/ }),
+/* 111 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(2);
+var core = __webpack_require__(4);
+var LIBRARY = __webpack_require__(65);
+var wksExt = __webpack_require__(110);
+var defineProperty = __webpack_require__(3).f;
+module.exports = function (name) {
+  var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
+  if (name.charAt(0) != '_' && !(name in $Symbol)) defineProperty($Symbol, name, { value: wksExt.f(name) });
+};
+
+
+/***/ }),
+/* 112 */
+/***/ (function(module, exports) {
+
+exports.f = {}.propertyIsEnumerable;
+
+
+/***/ }),
+/* 113 */
+/***/ (function(module, exports) {
+
+exports.f = Object.getOwnPropertySymbols;
+
+
+/***/ }),
+/* 114 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
+var $keys = __webpack_require__(70);
+var hiddenKeys = __webpack_require__(41).concat('length', 'prototype');
+
+exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
+  return $keys(O, hiddenKeys);
+};
+
+
+/***/ }),
+/* 115 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _iterator = __webpack_require__(116);
+
+var _iterator2 = _interopRequireDefault(_iterator);
+
+var _symbol = __webpack_require__(118);
+
+var _symbol2 = _interopRequireDefault(_symbol);
+
+var _typeof = typeof _symbol2.default === "function" && typeof _iterator2.default === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default && obj !== _symbol2.default.prototype ? "symbol" : typeof obj; };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = typeof _symbol2.default === "function" && _typeof(_iterator2.default) === "symbol" ? function (obj) {
+  return typeof obj === "undefined" ? "undefined" : _typeof(obj);
+} : function (obj) {
+  return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default && obj !== _symbol2.default.prototype ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
+};
+
+/***/ }),
+/* 116 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = { "default": __webpack_require__(117), __esModule: true };
+
+/***/ }),
+/* 117 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(17);
+__webpack_require__(20);
+module.exports = __webpack_require__(110).f('iterator');
+
+
+/***/ }),
+/* 118 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = { "default": __webpack_require__(119), __esModule: true };
+
+/***/ }),
+/* 119 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(120);
+__webpack_require__(90);
+__webpack_require__(124);
+__webpack_require__(125);
+module.exports = __webpack_require__(4).Symbol;
+
+
+/***/ }),
+/* 120 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// ECMAScript 6 symbols shim
+var global = __webpack_require__(2);
+var has = __webpack_require__(13);
+var DESCRIPTORS = __webpack_require__(5);
+var $export = __webpack_require__(1);
+var redefine = __webpack_require__(66);
+var META = __webpack_require__(49).KEY;
+var $fails = __webpack_require__(12);
+var shared = __webpack_require__(40);
+var setToStringTag = __webpack_require__(27);
+var uid = __webpack_require__(26);
+var wks = __webpack_require__(0);
+var wksExt = __webpack_require__(110);
+var wksDefine = __webpack_require__(111);
+var enumKeys = __webpack_require__(121);
+var isArray = __webpack_require__(98);
+var anObject = __webpack_require__(10);
+var isObject = __webpack_require__(7);
+var toIObject = __webpack_require__(21);
+var toPrimitive = __webpack_require__(56);
+var createDesc = __webpack_require__(19);
+var _create = __webpack_require__(39);
+var gOPNExt = __webpack_require__(122);
+var $GOPD = __webpack_require__(123);
+var $DP = __webpack_require__(3);
+var $keys = __webpack_require__(69);
+var gOPD = $GOPD.f;
+var dP = $DP.f;
+var gOPN = gOPNExt.f;
+var $Symbol = global.Symbol;
+var $JSON = global.JSON;
+var _stringify = $JSON && $JSON.stringify;
+var PROTOTYPE = 'prototype';
+var HIDDEN = wks('_hidden');
+var TO_PRIMITIVE = wks('toPrimitive');
+var isEnum = {}.propertyIsEnumerable;
+var SymbolRegistry = shared('symbol-registry');
+var AllSymbols = shared('symbols');
+var OPSymbols = shared('op-symbols');
+var ObjectProto = Object[PROTOTYPE];
+var USE_NATIVE = typeof $Symbol == 'function';
+var QObject = global.QObject;
+// Don't use setters in Qt Script, https://github.com/zloirock/core-js/issues/173
+var setter = !QObject || !QObject[PROTOTYPE] || !QObject[PROTOTYPE].findChild;
+
+// fallback for old Android, https://code.google.com/p/v8/issues/detail?id=687
+var setSymbolDesc = DESCRIPTORS && $fails(function () {
+  return _create(dP({}, 'a', {
+    get: function () { return dP(this, 'a', { value: 7 }).a; }
+  })).a != 7;
+}) ? function (it, key, D) {
+  var protoDesc = gOPD(ObjectProto, key);
+  if (protoDesc) delete ObjectProto[key];
+  dP(it, key, D);
+  if (protoDesc && it !== ObjectProto) dP(ObjectProto, key, protoDesc);
+} : dP;
+
+var wrap = function (tag) {
+  var sym = AllSymbols[tag] = _create($Symbol[PROTOTYPE]);
+  sym._k = tag;
+  return sym;
+};
+
+var isSymbol = USE_NATIVE && typeof $Symbol.iterator == 'symbol' ? function (it) {
+  return typeof it == 'symbol';
+} : function (it) {
+  return it instanceof $Symbol;
+};
+
+var $defineProperty = function defineProperty(it, key, D) {
+  if (it === ObjectProto) $defineProperty(OPSymbols, key, D);
+  anObject(it);
+  key = toPrimitive(key, true);
+  anObject(D);
+  if (has(AllSymbols, key)) {
+    if (!D.enumerable) {
+      if (!has(it, HIDDEN)) dP(it, HIDDEN, createDesc(1, {}));
+      it[HIDDEN][key] = true;
+    } else {
+      if (has(it, HIDDEN) && it[HIDDEN][key]) it[HIDDEN][key] = false;
+      D = _create(D, { enumerable: createDesc(0, false) });
+    } return setSymbolDesc(it, key, D);
+  } return dP(it, key, D);
+};
+var $defineProperties = function defineProperties(it, P) {
+  anObject(it);
+  var keys = enumKeys(P = toIObject(P));
+  var i = 0;
+  var l = keys.length;
+  var key;
+  while (l > i) $defineProperty(it, key = keys[i++], P[key]);
+  return it;
+};
+var $create = function create(it, P) {
+  return P === undefined ? _create(it) : $defineProperties(_create(it), P);
+};
+var $propertyIsEnumerable = function propertyIsEnumerable(key) {
+  var E = isEnum.call(this, key = toPrimitive(key, true));
+  if (this === ObjectProto && has(AllSymbols, key) && !has(OPSymbols, key)) return false;
+  return E || !has(this, key) || !has(AllSymbols, key) || has(this, HIDDEN) && this[HIDDEN][key] ? E : true;
+};
+var $getOwnPropertyDescriptor = function getOwnPropertyDescriptor(it, key) {
+  it = toIObject(it);
+  key = toPrimitive(key, true);
+  if (it === ObjectProto && has(AllSymbols, key) && !has(OPSymbols, key)) return;
+  var D = gOPD(it, key);
+  if (D && has(AllSymbols, key) && !(has(it, HIDDEN) && it[HIDDEN][key])) D.enumerable = true;
+  return D;
+};
+var $getOwnPropertyNames = function getOwnPropertyNames(it) {
+  var names = gOPN(toIObject(it));
+  var result = [];
+  var i = 0;
+  var key;
+  while (names.length > i) {
+    if (!has(AllSymbols, key = names[i++]) && key != HIDDEN && key != META) result.push(key);
+  } return result;
+};
+var $getOwnPropertySymbols = function getOwnPropertySymbols(it) {
+  var IS_OP = it === ObjectProto;
+  var names = gOPN(IS_OP ? OPSymbols : toIObject(it));
+  var result = [];
+  var i = 0;
+  var key;
+  while (names.length > i) {
+    if (has(AllSymbols, key = names[i++]) && (IS_OP ? has(ObjectProto, key) : true)) result.push(AllSymbols[key]);
+  } return result;
+};
+
+// 19.4.1.1 Symbol([description])
+if (!USE_NATIVE) {
+  $Symbol = function Symbol() {
+    if (this instanceof $Symbol) throw TypeError('Symbol is not a constructor!');
+    var tag = uid(arguments.length > 0 ? arguments[0] : undefined);
+    var $set = function (value) {
+      if (this === ObjectProto) $set.call(OPSymbols, value);
+      if (has(this, HIDDEN) && has(this[HIDDEN], tag)) this[HIDDEN][tag] = false;
+      setSymbolDesc(this, tag, createDesc(1, value));
+    };
+    if (DESCRIPTORS && setter) setSymbolDesc(ObjectProto, tag, { configurable: true, set: $set });
+    return wrap(tag);
+  };
+  redefine($Symbol[PROTOTYPE], 'toString', function toString() {
+    return this._k;
+  });
+
+  $GOPD.f = $getOwnPropertyDescriptor;
+  $DP.f = $defineProperty;
+  __webpack_require__(114).f = gOPNExt.f = $getOwnPropertyNames;
+  __webpack_require__(112).f = $propertyIsEnumerable;
+  __webpack_require__(113).f = $getOwnPropertySymbols;
+
+  if (DESCRIPTORS && !__webpack_require__(65)) {
+    redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
+  }
+
+  wksExt.f = function (name) {
+    return wrap(wks(name));
+  };
+}
+
+$export($export.G + $export.W + $export.F * !USE_NATIVE, { Symbol: $Symbol });
+
+for (var es6Symbols = (
+  // 19.4.2.2, 19.4.2.3, 19.4.2.4, 19.4.2.6, 19.4.2.8, 19.4.2.9, 19.4.2.10, 19.4.2.11, 19.4.2.12, 19.4.2.13, 19.4.2.14
+  'hasInstance,isConcatSpreadable,iterator,match,replace,search,species,split,toPrimitive,toStringTag,unscopables'
+).split(','), j = 0; es6Symbols.length > j;)wks(es6Symbols[j++]);
+
+for (var wellKnownSymbols = $keys(wks.store), k = 0; wellKnownSymbols.length > k;) wksDefine(wellKnownSymbols[k++]);
+
+$export($export.S + $export.F * !USE_NATIVE, 'Symbol', {
+  // 19.4.2.1 Symbol.for(key)
+  'for': function (key) {
+    return has(SymbolRegistry, key += '')
+      ? SymbolRegistry[key]
+      : SymbolRegistry[key] = $Symbol(key);
+  },
+  // 19.4.2.5 Symbol.keyFor(sym)
+  keyFor: function keyFor(sym) {
+    if (!isSymbol(sym)) throw TypeError(sym + ' is not a symbol!');
+    for (var key in SymbolRegistry) if (SymbolRegistry[key] === sym) return key;
+  },
+  useSetter: function () { setter = true; },
+  useSimple: function () { setter = false; }
+});
+
+$export($export.S + $export.F * !USE_NATIVE, 'Object', {
+  // 19.1.2.2 Object.create(O [, Properties])
+  create: $create,
+  // 19.1.2.4 Object.defineProperty(O, P, Attributes)
+  defineProperty: $defineProperty,
+  // 19.1.2.3 Object.defineProperties(O, Properties)
+  defineProperties: $defineProperties,
+  // 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
+  getOwnPropertyDescriptor: $getOwnPropertyDescriptor,
+  // 19.1.2.7 Object.getOwnPropertyNames(O)
+  getOwnPropertyNames: $getOwnPropertyNames,
+  // 19.1.2.8 Object.getOwnPropertySymbols(O)
+  getOwnPropertySymbols: $getOwnPropertySymbols
+});
+
+// 24.3.2 JSON.stringify(value [, replacer [, space]])
+$JSON && $export($export.S + $export.F * (!USE_NATIVE || $fails(function () {
+  var S = $Symbol();
+  // MS Edge converts symbol values to JSON as {}
+  // WebKit converts symbol values to JSON as null
+  // V8 throws on boxed symbols
+  return _stringify([S]) != '[null]' || _stringify({ a: S }) != '{}' || _stringify(Object(S)) != '{}';
+})), 'JSON', {
+  stringify: function stringify(it) {
+    var args = [it];
+    var i = 1;
+    var replacer, $replacer;
+    while (arguments.length > i) args.push(arguments[i++]);
+    $replacer = replacer = args[1];
+    if (!isObject(replacer) && it === undefined || isSymbol(it)) return; // IE8 returns string on undefined
+    if (!isArray(replacer)) replacer = function (key, value) {
+      if (typeof $replacer == 'function') value = $replacer.call(this, key, value);
+      if (!isSymbol(value)) return value;
+    };
+    args[1] = replacer;
+    return _stringify.apply($JSON, args);
+  }
+});
+
+// 19.4.3.4 Symbol.prototype[@@toPrimitive](hint)
+$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__(6)($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
+// 19.4.3.5 Symbol.prototype[@@toStringTag]
+setToStringTag($Symbol, 'Symbol');
+// 20.2.1.9 Math[@@toStringTag]
+setToStringTag(Math, 'Math', true);
+// 24.3.3 JSON[@@toStringTag]
+setToStringTag(global.JSON, 'JSON', true);
+
+
+/***/ }),
+/* 121 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// all enumerable object keys, includes symbols
+var getKeys = __webpack_require__(69);
+var gOPS = __webpack_require__(113);
+var pIE = __webpack_require__(112);
+module.exports = function (it) {
+  var result = getKeys(it);
+  var getSymbols = gOPS.f;
+  if (getSymbols) {
+    var symbols = getSymbols(it);
+    var isEnum = pIE.f;
+    var i = 0;
+    var key;
+    while (symbols.length > i) if (isEnum.call(it, key = symbols[i++])) result.push(key);
+  } return result;
+};
+
+
+/***/ }),
+/* 122 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
+var toIObject = __webpack_require__(21);
+var gOPN = __webpack_require__(114).f;
+var toString = {}.toString;
+
+var windowNames = typeof window == 'object' && window && Object.getOwnPropertyNames
+  ? Object.getOwnPropertyNames(window) : [];
+
+var getWindowNames = function (it) {
+  try {
+    return gOPN(it);
+  } catch (e) {
+    return windowNames.slice();
+  }
+};
+
+module.exports.f = function getOwnPropertyNames(it) {
+  return windowNames && toString.call(it) == '[object Window]' ? getWindowNames(it) : gOPN(toIObject(it));
+};
+
+
+/***/ }),
+/* 123 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var pIE = __webpack_require__(112);
+var createDesc = __webpack_require__(19);
+var toIObject = __webpack_require__(21);
+var toPrimitive = __webpack_require__(56);
+var has = __webpack_require__(13);
+var IE8_DOM_DEFINE = __webpack_require__(55);
+var gOPD = Object.getOwnPropertyDescriptor;
+
+exports.f = __webpack_require__(5) ? gOPD : function getOwnPropertyDescriptor(O, P) {
+  O = toIObject(O);
+  P = toPrimitive(P, true);
+  if (IE8_DOM_DEFINE) try {
+    return gOPD(O, P);
+  } catch (e) { /* empty */ }
+  if (has(O, P)) return createDesc(!pIE.f.call(O, P), O[P]);
+};
+
+
+/***/ }),
+/* 124 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(111)('asyncIterator');
+
+
+/***/ }),
+/* 125 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(111)('observable');
+
 
 /***/ })
 /******/ ]);
