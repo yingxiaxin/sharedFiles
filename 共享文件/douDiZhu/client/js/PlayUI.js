@@ -19,6 +19,8 @@ class PlayUI
         }
 
         this.enableRightClick();
+        this.disableDrag();
+
         this.playerStateGenerator = null;
         this.leftPlayer = null;
         this.rightPlayer = null;
@@ -40,11 +42,13 @@ class PlayUI
             top = 0;
         let overlapFactor = G.OVERLAP_FACTOR,
             overlapFactor_TTB = G.OVERLAP_FACTOR_TTB;   //两张牌不重叠的宽度比例
+
         for(let i=0; i<cardList.length; i++)
         {
-            let num = cardList[i].val;
-            let type = cardList[i].type;
-            let card = new CardUI(num, type.toString(), container);
+            let num = cardList[i].val,
+                type = cardList[i].type,
+                iconPos = cardList[i].iconPos;
+            let card = new CardUI(num, type.toString(), iconPos, container);
             container.appendChild(card.domInstance);
 
             let len = cardList.length;
@@ -187,7 +191,7 @@ class PlayUI
                 clearInterval(itv);
                 this.renderCards(G.dipaiAreaContainer, cardList, G.PLAYER_CONTAINER_INSERT_DIRECTION_LTR);
                 this.disableClick(G.ownPlayerContainer, G.CONTAINER_CLICK);
-                // this.enableSwipeSelect();
+                this.enableSwipeSelect();
             }
             else
             {
@@ -326,7 +330,7 @@ class PlayUI
             window.event.returnValue=false;
             e.stopPropagation(); //阻止事件冒泡
             return false;
-        });        
+        });
     }
 
     /**
@@ -339,15 +343,13 @@ class PlayUI
         let lastDownX = 0,
             lastUpX = 0;
 
-        let cardArray = Array.from(dom.getElementsByClassName('card')),
-            firstCard = cardArray[0],
-            lastCard = cardArray[cardArray.length-1];
-
-        let cardwidth = firstCard.offsetWidth,
-            increment = cardwidth * G.OVERLAT_FACTOR;
-
         dom.addEventListener('mousedown', function(e)
         {
+            //js里mousedown、mouseup、click等事件左右键还是滚轮要区分一下，e.button=0是左键，1是滚轮，2是右键
+            if(e.button != 0)
+            {
+                return;
+            }
             let m_x = e.clientX;
 
             //div居中的时候经过了translate平移，translate平移不会改变offsetLeft和offsetTop的值，直接减offsetLeft不准
@@ -357,6 +359,21 @@ class PlayUI
 
         dom.addEventListener('mouseup', function(e)
         {
+            //js里mousedown、mouseup、click等事件左右键还是滚轮要区分一下，e.button=0是左键，1是滚轮，2是右键
+            if(e.button != 0)
+            {
+                return;
+            }
+
+            let dom = G.ownPlayerContainer;
+
+            let cardArray = Array.from(dom.getElementsByClassName(G.CARD_CLASSNAME)),
+                firstCard = cardArray[0],
+                lastCard = cardArray[cardArray.length-1];
+
+            let cardwidth = firstCard.offsetWidth,
+                increment = cardwidth * G.OVERLAP_FACTOR;
+
             let m_x = e.clientX;
 
             //div居中的时候经过了translate平移，translate平移不会改变offsetLeft和offsetTop的值，直接减offsetLeft不准
@@ -367,7 +384,7 @@ class PlayUI
 
             let [qidian, zhongdian] = swipeWidth >= 0 ? [lastDownX, lastUpX] : [lastUpX, lastDownX];
 
-            if(zhongdian < firstCard.offsetLeft || qidian > firstCard.offsetRight)
+            if(zhongdian < firstCard.offsetLeft || qidian > lastCard.offsetRight)
             {
                 return;
             }
@@ -380,30 +397,56 @@ class PlayUI
                 }
                 else
                 {
-                    qidian_index = Math.ceil(qidian_index);
+                    qidian_index = Math.floor(qidian_index);
                 }
 
-                let zhongdian_index = Math.ceil((qidian - firstCard.offsetLeft)/increment);
+                let zhongdian_index = Math.floor((zhongdian - firstCard.offsetLeft)/increment);
                 if(zhongdian_index > (cardArray.length-1))
                 {
                     zhongdian_index = cardArray.length - 1;
                 }
 
-                typeof(firstCard);
-
+                console.log(lastDownX, lastUpX, qidian_index, zhongdian_index);
                 for(let i=qidian_index; i<=zhongdian_index; i++)
                 {
                     let dom = cardArray[i];
 
-                    // if()
+                    if(dom.getAttribute('selected') == 'false' || dom.getAttribute('selected') == null)
+                    {
+                        dom.style.transform = 'translateY(-3rem)';
+                        dom.setAttribute('selected', true);
+                    }
+                    else if(dom.getAttribute('selected') == 'true')
+                    {
+                        dom.style.transform = 'translateY(0)';
+                        dom.setAttribute('selected', false);
+                    }
                 }
             }
         });
     }
 
+    /**
+     * 禁止拖动功能，以免拖动选牌的时候造成第一次拖动完成后无法继续选牌的情况
+     */
+    disableDrag()
+    {
+        let bd = document.getElementsByTagName('body')[0];
+        bd.ondragstart = ()=>{return false;};
+    }
 
-
-
+    flipDiPai()
+    {
+        let dom = G.dipaiAreaContainer;
+        let cardArray = Array.from(dom.getElementsByClassName(G.CARD_CLASSNAME));
+        for(let card of cardArray)
+        {
+            let type = card.getAttribute('type'),
+                val = card.getAttribute('val'),
+                iconPos = CardData.getIconPos(type, val);
+            card.style.backgroundPosition = iconPos;
+        }
+    }
 
 
 
