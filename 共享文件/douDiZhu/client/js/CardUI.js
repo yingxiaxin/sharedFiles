@@ -13,7 +13,6 @@ class CardUI
         instanceDiv.style.position = 'absolute';
         instanceDiv.style.cursor = 'pointer';
         instanceDiv.style.userSelect = 'none';
-        instanceDiv.style.backgroundImage = 'url(' + G.CADR_IMG_ADDR + ')';
 
         //如果不是玩家区域的牌，则显示牌背面
         instanceDiv.style.backgroundPosition = (this.parentContainer === G.ownPlayerContainer ? iconPos : G.CARD_BACK_POS);
