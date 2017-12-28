@@ -1,4 +1,4 @@
-import G from './start';
+import G from './global';
 // import CardData from './CardData';
 import PlayUI from './PlayUI';
 
@@ -45,12 +45,20 @@ ready(function()
 
 
     let socket = io.connect('http://localhost:3000');
-    socket.on('news', function(data) 
+
+    socket.on(G.SOCKETIO_NEWS_PRIVATE, (data)=>
     {
-        console.log(data);
-        socket.emit('private_message', { my: 'data' });
-        console.log('emit private message');
+        window.console.log('receive server message: ' + data);
+        socket.emit(G.SOCKETIO_JOINROOM);
+        window.console.log('client emit join room event');    
     });
+
+    socket.on(G.SOCKETIO_JOINROOM, (data)=>
+    {
+        alert(data); 
+    });
+
+    
     
 });
 

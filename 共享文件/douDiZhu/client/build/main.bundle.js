@@ -433,6 +433,23 @@ window.G.init = function () {
     G.CARD_BACK_POS = '-1729px -671px';
 
     G.players = [];
+
+    //socketio的事件
+    G.SOCKETIO_PLAYERREADY = 'playerReady';
+    G.SOCKETIO_JOINROOM = 'room_1';
+    G.SOCKETIO_ROBLORD = 'robLord'; //客户端发送
+    G.SOCKETIO_DRAWCARD = 'drawCard'; //客户端发送
+
+
+    G.SOCKETIO_NEWS_PRIVATE = 'news_private'; //服务端、客户端都可发送
+    G.SOCKETIO_NEWS_BROADCAST = 'news_broadcast'; //服务端、客户端都可发送
+    G.SOCKETIO_ASSIGNROBLORD_ON = 'assignRobLord_on'; //服务端发送
+    G.SOCKETIO_ASSIGNROBLORD_OFF = 'assignRobLord_off'; //服务端发送
+    G.SOCKETIO_ASSIGNLORD = 'assignLord'; //服务端发送
+    G.SOCKETIO_ASSIGNWINNER = 'assignWinner'; //服务端发送
+    G.SOCKETIO_ASSIGNLOSER = 'assignLoser'; //服务端发送
+    G.SOCKETIO_ASSIGNDRAWCARD_ON = 'assignDrawCard_on'; //服务端发送
+    G.SOCKETIO_ASSIGNDRAWCARD_OFF = 'assignDrawCard_off'; //服务端发送
 };
 
 exports.default = G;
@@ -1027,9 +1044,9 @@ module.exports = function (it, TYPE) {
 "use strict";
 
 
-var _start = __webpack_require__(19);
+var _global = __webpack_require__(19);
 
-var _start2 = _interopRequireDefault(_start);
+var _global2 = _interopRequireDefault(_global);
 
 var _PlayUI = __webpack_require__(50);
 
@@ -1060,7 +1077,7 @@ function ready(fn) {
 
 
 ready(function () {
-    _start2.default.init();
+    _global2.default.init();
     // let newcard = CardData.getNewCard();
     var play = new _PlayUI2.default();
     play.initPlayers();
@@ -1068,10 +1085,15 @@ ready(function () {
     play.dealCards(play.cardList);
 
     var socket = io.connect('http://localhost:3000');
-    socket.on('news', function (data) {
-        console.log(data);
-        socket.emit('private_message', { my: 'data' });
-        console.log('emit private message');
+
+    socket.on(_global2.default.SOCKETIO_NEWS_PRIVATE, function (data) {
+        window.console.log('receive server message: ' + data);
+        socket.emit(_global2.default.SOCKETIO_JOINROOM);
+        window.console.log('client emit join room event');
+    });
+
+    socket.on(_global2.default.SOCKETIO_JOINROOM, function (data) {
+        alert(data);
     });
 });
 
@@ -1118,9 +1140,9 @@ var _CardUI = __webpack_require__(106);
 
 var _CardUI2 = _interopRequireDefault(_CardUI);
 
-var _start = __webpack_require__(19);
+var _global = __webpack_require__(19);
 
-var _start2 = _interopRequireDefault(_start);
+var _global2 = _interopRequireDefault(_global);
 
 var _CardData = __webpack_require__(107);
 
@@ -1139,7 +1161,7 @@ var PlayUI = function () {
     function PlayUI() {
         (0, _classCallCheck3.default)(this, PlayUI);
 
-        var noclickContainers = [_start2.default.leftPlayerContainer, _start2.default.ownPlayerContainer, _start2.default.rightPlayerContainer, _start2.default.mainAreaContainer, _start2.default.scoreAreaContainer, _start2.default.timerAreaContainer, _start2.default.dipaiAreaContainer];
+        var noclickContainers = [_global2.default.leftPlayerContainer, _global2.default.ownPlayerContainer, _global2.default.rightPlayerContainer, _global2.default.mainAreaContainer, _global2.default.scoreAreaContainer, _global2.default.timerAreaContainer, _global2.default.dipaiAreaContainer];
 
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
@@ -1149,7 +1171,7 @@ var PlayUI = function () {
             for (var _iterator = (0, _getIterator3.default)(noclickContainers), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                 var dom = _step.value;
 
-                this.disableClick(dom, _start2.default.CONTAINER_NO_CLICK);
+                this.disableClick(dom, _global2.default.CONTAINER_NO_CLICK);
             }
         } catch (err) {
             _didIteratorError = true;
@@ -1186,15 +1208,15 @@ var PlayUI = function () {
     (0, _createClass3.default)(PlayUI, [{
         key: 'renderCards',
         value: function renderCards(container, cardList) {
-            var direction = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _start2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR;
+            var direction = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _global2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR;
 
             this.removeAllCards(container);
             Array.prototype.sort.call(cardList, _GameRule2.default.cardSort);
 
             var left = 0,
                 top = 0;
-            var overlapFactor = _start2.default.OVERLAP_FACTOR,
-                overlapFactor_TTB = _start2.default.OVERLAP_FACTOR_TTB; //两张牌不重叠的宽度比例
+            var overlapFactor = _global2.default.OVERLAP_FACTOR,
+                overlapFactor_TTB = _global2.default.OVERLAP_FACTOR_TTB; //两张牌不重叠的宽度比例
 
             for (var i = 0; i < cardList.length; i++) {
                 var num = cardList[i].val,
@@ -1215,7 +1237,7 @@ var PlayUI = function () {
                     gapheight_ttb = (container.offsetHeight - cardsHeight) / 2;
 
                 switch (direction) {
-                    case _start2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR:
+                    case _global2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR:
                         {
                             if (i == 0) {
                                 left = left + gapwidth_ltr;
@@ -1225,7 +1247,7 @@ var PlayUI = function () {
                             left = left + cardwidth * overlapFactor;
                             break;
                         }
-                    case _start2.default.PLAYER_CONTAINER_INSERT_DIRECTION_TTB:
+                    case _global2.default.PLAYER_CONTAINER_INSERT_DIRECTION_TTB:
                         {
                             if (i == 0) {
                                 top = top + gapheight_ttb;
@@ -1247,7 +1269,7 @@ var PlayUI = function () {
     }, {
         key: 'removeAllCards',
         value: function removeAllCards(container) {
-            var cards = (0, _from2.default)(container.getElementsByClassName(_start2.default.CARD_CLASSNAME));
+            var cards = (0, _from2.default)(container.getElementsByClassName(_global2.default.CARD_CLASSNAME));
             var _iteratorNormalCompletion2 = true;
             var _didIteratorError2 = false;
             var _iteratorError2 = undefined;
@@ -1304,7 +1326,7 @@ var PlayUI = function () {
         value: function dealCards(cardList) {
             var _this = this;
 
-            var _G$players = (0, _slicedToArray3.default)(_start2.default.players, 3),
+            var _G$players = (0, _slicedToArray3.default)(_global2.default.players, 3),
                 player1 = _G$players[0],
                 player2 = _G$players[1],
                 player3 = _G$players[2];
@@ -1327,9 +1349,9 @@ var PlayUI = function () {
 
                                 Array.prototype.push.call(player1.cardList, onecard[0]);
                                 if (player1.isOwn == true) {
-                                    self.renderCards(_start2.default.ownPlayerContainer, player1.cardList, _start2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR);
+                                    self.renderCards(_global2.default.ownPlayerContainer, player1.cardList, _global2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR);
                                 } else {
-                                    self.renderCards(_start2.default.leftPlayerContainer, player1.cardList, _start2.default.PLAYER_CONTAINER_INSERT_DIRECTION_TTB);
+                                    self.renderCards(_global2.default.leftPlayerContainer, player1.cardList, _global2.default.PLAYER_CONTAINER_INSERT_DIRECTION_TTB);
                                 }
                                 _context.next = 6;
                                 return;
@@ -1339,9 +1361,9 @@ var PlayUI = function () {
 
                                 Array.prototype.push.call(player2.cardList, _onecard[0]);
                                 if (player2.isOwn == true) {
-                                    self.renderCards(_start2.default.ownPlayerContainer, player2.cardList, _start2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR);
+                                    self.renderCards(_global2.default.ownPlayerContainer, player2.cardList, _global2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR);
                                 } else {
-                                    self.renderCards(_start2.default.leftPlayerContainer, player2.cardList, _start2.default.PLAYER_CONTAINER_INSERT_DIRECTION_TTB);
+                                    self.renderCards(_global2.default.leftPlayerContainer, player2.cardList, _global2.default.PLAYER_CONTAINER_INSERT_DIRECTION_TTB);
                                 }
                                 _context.next = 11;
                                 return;
@@ -1351,9 +1373,9 @@ var PlayUI = function () {
 
                                 Array.prototype.push.call(player3.cardList, _onecard2[0]);
                                 if (player3.isOwn == true) {
-                                    self.renderCards(_start2.default.ownPlayerContainer, player3.cardList, _start2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR);
+                                    self.renderCards(_global2.default.ownPlayerContainer, player3.cardList, _global2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR);
                                 } else {
-                                    self.renderCards(_start2.default.rightPlayerContainer, player3.cardList, _start2.default.PLAYER_CONTAINER_INSERT_DIRECTION_TTB);
+                                    self.renderCards(_global2.default.rightPlayerContainer, player3.cardList, _global2.default.PLAYER_CONTAINER_INSERT_DIRECTION_TTB);
                                 }
                                 _context.next = 16;
                                 return;
@@ -1375,13 +1397,13 @@ var PlayUI = function () {
             var itv = setInterval(function () {
                 if (player1.cardList.length == 17 && player2.cardList.length == 17 && player3.cardList.length == 17) {
                     clearInterval(itv);
-                    _this.renderCards(_start2.default.dipaiAreaContainer, cardList, _start2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR);
-                    _this.disableClick(_start2.default.ownPlayerContainer, _start2.default.CONTAINER_CLICK);
+                    _this.renderCards(_global2.default.dipaiAreaContainer, cardList, _global2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR);
+                    _this.disableClick(_global2.default.ownPlayerContainer, _global2.default.CONTAINER_CLICK);
                     _this.enableSwipeSelect();
                 } else {
                     d.next();
                 }
-            }, _start2.default.DEALCARD_RATE);
+            }, _global2.default.DEALCARD_RATE);
         }
     }, {
         key: 'rightClickDrawCards',
@@ -1394,8 +1416,8 @@ var PlayUI = function () {
     }, {
         key: 'drawCards',
         value: function drawCards() {
-            var dom = _start2.default.ownPlayerContainer;
-            var cardsArray = (0, _from2.default)(dom.getElementsByClassName(_start2.default.CARD_CLASSNAME));
+            var dom = _global2.default.ownPlayerContainer;
+            var cardsArray = (0, _from2.default)(dom.getElementsByClassName(_global2.default.CARD_CLASSNAME));
 
             var selectedCards = []; //被选中的牌的div元素
             var _iteratorNormalCompletion3 = true;
@@ -1432,7 +1454,7 @@ var PlayUI = function () {
             var _iteratorError4 = undefined;
 
             try {
-                for (var _iterator4 = (0, _getIterator3.default)(_start2.default.players), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                for (var _iterator4 = (0, _getIterator3.default)(_global2.default.players), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
                     var p = _step4.value;
 
                     if (p.isOwn == true) {
@@ -1506,8 +1528,8 @@ var PlayUI = function () {
                 }
             }
 
-            this.renderCards(_start2.default.mainAreaContainer, selectedCardList, _start2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR);
-            this.renderCards(_start2.default.ownPlayerContainer, ownPlayer.cardList, _start2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR);
+            this.renderCards(_global2.default.mainAreaContainer, selectedCardList, _global2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR);
+            this.renderCards(_global2.default.ownPlayerContainer, ownPlayer.cardList, _global2.default.PLAYER_CONTAINER_INSERT_DIRECTION_LTR);
         }
     }, {
         key: 'initPlayers',
@@ -1518,7 +1540,7 @@ var PlayUI = function () {
 
             p1.isOwn = true;
 
-            _start2.default.players = [p1, p2, p3];
+            _global2.default.players = [p1, p2, p3];
 
             var flag = _GameRule2.default.random(0, 2);
 
@@ -1533,15 +1555,15 @@ var PlayUI = function () {
                                 }
 
                                 _context2.next = 3;
-                                return _start2.default.players[0];
+                                return _global2.default.players[0];
 
                             case 3:
                                 _context2.next = 5;
-                                return _start2.default.players[1];
+                                return _global2.default.players[1];
 
                             case 5:
                                 _context2.next = 7;
-                                return _start2.default.players[2];
+                                return _global2.default.players[2];
 
                             case 7:
                                 _context2.next = 0;
@@ -1581,7 +1603,7 @@ var PlayUI = function () {
     }, {
         key: 'getCurrentPlayer',
         value: function getCurrentPlayer() {
-            var players = _start2.default.players;
+            var players = _global2.default.players;
             var _iteratorNormalCompletion7 = true;
             var _didIteratorError7 = false;
             var _iteratorError7 = undefined;
@@ -1641,7 +1663,7 @@ var PlayUI = function () {
     }, {
         key: 'enableSwipeSelect',
         value: function enableSwipeSelect() {
-            var dom = _start2.default.ownPlayerContainer;
+            var dom = _global2.default.ownPlayerContainer;
 
             var lastDownX = 0,
                 lastUpX = 0;
@@ -1664,14 +1686,14 @@ var PlayUI = function () {
                     return;
                 }
 
-                var dom = _start2.default.ownPlayerContainer;
+                var dom = _global2.default.ownPlayerContainer;
 
-                var cardArray = (0, _from2.default)(dom.getElementsByClassName(_start2.default.CARD_CLASSNAME)),
+                var cardArray = (0, _from2.default)(dom.getElementsByClassName(_global2.default.CARD_CLASSNAME)),
                     firstCard = cardArray[0],
                     lastCard = cardArray[cardArray.length - 1];
 
                 var cardwidth = firstCard.offsetWidth,
-                    increment = cardwidth * _start2.default.OVERLAP_FACTOR;
+                    increment = cardwidth * _global2.default.OVERLAP_FACTOR;
 
                 var m_x = e.clientX;
 
@@ -1732,8 +1754,8 @@ var PlayUI = function () {
     }, {
         key: 'flipDiPai',
         value: function flipDiPai() {
-            var dom = _start2.default.dipaiAreaContainer;
-            var cardArray = (0, _from2.default)(dom.getElementsByClassName(_start2.default.CARD_CLASSNAME));
+            var dom = _global2.default.dipaiAreaContainer;
+            var cardArray = (0, _from2.default)(dom.getElementsByClassName(_global2.default.CARD_CLASSNAME));
             var _iteratorNormalCompletion8 = true;
             var _didIteratorError8 = false;
             var _iteratorError8 = undefined;
@@ -4143,9 +4165,9 @@ var _classCallCheck2 = __webpack_require__(13);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _start = __webpack_require__(19);
+var _global = __webpack_require__(19);
 
-var _start2 = _interopRequireDefault(_start);
+var _global2 = _interopRequireDefault(_global);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4161,10 +4183,9 @@ var CardUI = function CardUI(num, type, iconPos, parentCon) {
         instanceDiv.style.position = 'absolute';
         instanceDiv.style.cursor = 'pointer';
         instanceDiv.style.userSelect = 'none';
-        // instanceDiv.style.backgroundImage = 'url(' + G.CADR_IMG_ADDR + ')';
 
         //如果不是玩家区域的牌，则显示牌背面
-        instanceDiv.style.backgroundPosition = this.parentContainer === _start2.default.ownPlayerContainer ? iconPos : _start2.default.CARD_BACK_POS;
+        instanceDiv.style.backgroundPosition = this.parentContainer === _global2.default.ownPlayerContainer ? iconPos : _global2.default.CARD_BACK_POS;
 
         instanceDiv.setAttribute('class', 'card');
 

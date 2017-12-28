@@ -1,6 +1,6 @@
 import GameRule from './GameRule';
 import CardUI from './CardUI';
-import G from './start';
+import G from './global';
 import CardData from './CardData';
 import Player from './Player';
 
