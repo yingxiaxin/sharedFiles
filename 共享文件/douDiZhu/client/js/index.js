@@ -1,6 +1,7 @@
 import G from './global';
-// import CardData from './CardData';
 import PlayUI from './PlayUI';
+import RobBtnUI from './RobBtnUI';
+import StartBtnUI from './StartBtnUI';
 
 
 
@@ -23,7 +24,7 @@ function ready(fn)
         {
             if(document.readyState == 'complete')
             {
-                document.detachEvent('onreadystatechange', arguments.callee)
+                document.detachEvent('onreadystatechange', arguments.callee);
                 fn();
             }
         };
@@ -36,16 +37,8 @@ function ready(fn)
 ready(function()
 {
     G.init();
-    // let newcard = CardData.getNewCard();
-    let play = new PlayUI();
-    play.initPlayers();
-    play.shuffleNewCardList();
-    play.dealCards(play.cardList);
-
-
 
     let socket = io.connect('http://localhost:3000');
-
     socket.on(G.SOCKETIO_NEWS_PRIVATE, (data)=>
     {
         window.console.log('receive server message: ' + data);
@@ -58,6 +51,19 @@ ready(function()
         alert(data); 
     });
 
+
+
+
+
+    
+    G.socket = socket;
+    StartBtnUI.show();
+    RobBtnUI.show();
+
+    let play = new PlayUI();
+    play.initPlayers();
+    play.shuffleNewCardList();
+    play.dealCards(play.cardList);
     
     
 });

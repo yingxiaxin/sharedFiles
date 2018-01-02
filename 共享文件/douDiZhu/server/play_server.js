@@ -52,7 +52,8 @@ class play_server
             //玩家准备
             socket.on(G.SOCKETIO_PLAYERREADY, (data)=>
             {
-                let status = data.status == 'true' ? true : false;
+                global.console.log('server收到玩家准备的消息：' + socket.id + '-' + data);
+                let status = data == '准备' ? true : false;
                 this.setPlayerReadyStatus(socket.id, status);
 
                 let isAllReady = this.isPlayerAllReady();
@@ -90,7 +91,7 @@ class play_server
         {
             if(this.hasPlayer(socketid) == false)
             {
-                let newPlayer = new Player(socketid);
+                let newPlayer = new Player(socketid, socketid);
                 this.playerList.push(newPlayer);
             }
             return true;
@@ -121,12 +122,20 @@ class play_server
         return false;
     }
 
+    /**
+     * 设置玩家的准备状态
+     * @param {*} socketid 
+     * @param {*} status 
+     */
     setPlayerReadyStatus(socketid, status)
     {
         let p = this.getPlayer(socketid);
         p.isReady = status;
     }
 
+    /**
+     * 判断是否所有玩家完成准备
+     */
     isPlayerAllReady()
     {
         for(let p of this.playerList)

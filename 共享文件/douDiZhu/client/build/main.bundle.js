@@ -1052,6 +1052,14 @@ var _PlayUI = __webpack_require__(50);
 
 var _PlayUI2 = _interopRequireDefault(_PlayUI);
 
+var _RobBtnUI = __webpack_require__(109);
+
+var _RobBtnUI2 = _interopRequireDefault(_RobBtnUI);
+
+var _StartBtnUI = __webpack_require__(110);
+
+var _StartBtnUI2 = _interopRequireDefault(_StartBtnUI);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function ready(fn) {
@@ -1073,19 +1081,11 @@ function ready(fn) {
         document.attachEvent('onreadystatechange', _addlistener);
     }
 }
-// import CardData from './CardData';
-
 
 ready(function () {
     _global2.default.init();
-    // let newcard = CardData.getNewCard();
-    var play = new _PlayUI2.default();
-    play.initPlayers();
-    play.shuffleNewCardList();
-    play.dealCards(play.cardList);
 
     var socket = io.connect('http://localhost:3000');
-
     socket.on(_global2.default.SOCKETIO_NEWS_PRIVATE, function (data) {
         window.console.log('receive server message: ' + data);
         socket.emit(_global2.default.SOCKETIO_JOINROOM);
@@ -1095,6 +1095,15 @@ ready(function () {
     socket.on(_global2.default.SOCKETIO_JOINROOM, function (data) {
         alert(data);
     });
+
+    _global2.default.socket = socket;
+    _StartBtnUI2.default.show();
+    _RobBtnUI2.default.show();
+
+    var play = new _PlayUI2.default();
+    play.initPlayers();
+    play.shuffleNewCardList();
+    play.dealCards(play.cardList);
 });
 
 /***/ }),
@@ -4305,6 +4314,265 @@ var Player = function Player() {
 };
 
 exports.default = Player;
+
+/***/ }),
+/* 109 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _getIterator2 = __webpack_require__(17);
+
+var _getIterator3 = _interopRequireDefault(_getIterator2);
+
+var _from = __webpack_require__(41);
+
+var _from2 = _interopRequireDefault(_from);
+
+var _classCallCheck2 = __webpack_require__(13);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = __webpack_require__(32);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _global = __webpack_require__(19);
+
+var _global2 = _interopRequireDefault(_global);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var RobBtnUI = function () {
+    function RobBtnUI() {
+        (0, _classCallCheck3.default)(this, RobBtnUI);
+    }
+
+    (0, _createClass3.default)(RobBtnUI, null, [{
+        key: 'show',
+        value: function show() {
+            if (RobBtnUI.instance == null) {
+                var robBtnContainer = document.createElement('div');
+                robBtnContainer.style.position = 'absolute';
+                robBtnContainer.style.width = '1000px';
+                robBtnContainer.style.height = '40px';
+                robBtnContainer.style.top = '50%';
+                robBtnContainer.style.left = '50%';
+                robBtnContainer.style.transform = 'translate(-50%)';
+                robBtnContainer.style.display = 'flex';
+                robBtnContainer.style.justifyContent = 'space-around';
+                robBtnContainer.style.alignItems = 'center';
+
+                var one_Btn = document.createElement('button');
+                var two_Btn = document.createElement('button');
+                var three_Btn = document.createElement('button');
+
+                one_Btn.innerHTML = '1分';
+                two_Btn.innerHTML = '2分';
+                three_Btn.innerHTML = '3分';
+
+                robBtnContainer.appendChild(one_Btn);
+                robBtnContainer.appendChild(two_Btn);
+                robBtnContainer.appendChild(three_Btn);
+
+                one_Btn.onclick = function () {
+                    RobBtnUI.sendPoint(one_Btn.innerHTML);
+                    RobBtnUI.hide();
+                };
+                two_Btn.onclick = function () {
+                    RobBtnUI.sendPoint(two_Btn.innerHTML);
+                    RobBtnUI.hide();
+                };
+                three_Btn.onclick = function () {
+                    RobBtnUI.sendPoint(three_Btn.innerHTML);
+                    RobBtnUI.hide();
+                };
+
+                var bd = document.getElementsByTagName('body')[0];
+                bd.appendChild(robBtnContainer);
+                RobBtnUI.instance = robBtnContainer;
+
+                RobBtnUI.hide();
+                RobBtnUI.addSocketListener();
+            } else {
+                RobBtnUI.instance.style.display = 'flex';
+            }
+        }
+    }, {
+        key: 'hide',
+        value: function hide() {
+            if (RobBtnUI.instance != null) {
+                RobBtnUI.instance.style.display = 'none';
+            }
+        }
+    }, {
+        key: 'remove',
+        value: function remove() {
+            if (RobBtnUI.instance != null) {
+                var body = document.getElementsByTagName('body')[0];
+                body.removeChild(RobBtnUI.instance);
+                RobBtnUI.instance = null;
+            }
+        }
+    }, {
+        key: 'addSocketListener',
+        value: function addSocketListener() {
+            var socket = _global2.default.socket;
+
+            socket.on(_global2.default.SOCKETIO_ASSIGNROBLORD_OFF, function () {
+                RobBtnUI.hide();
+            });
+
+            socket.on(_global2.default.SOCKETIO_ASSIGNROBLORD_ON, function (data) {
+                window.console.log('socket 收到叫地主事件: ' + data);
+                RobBtnUI.show();
+                RobBtnUI.activateBtn(data);
+            });
+        }
+    }, {
+        key: 'sendPoint',
+        value: function sendPoint(point) {
+            var socket = _global2.default.socket;
+            socket.emit(_global2.default.SOCKETIO_ROBLORD, point);
+        }
+    }, {
+        key: 'activateBtn',
+        value: function activateBtn(text) {
+            var btns = (0, _from2.default)(RobBtnUI.instance.getElementsByTagName('button'));
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = (0, _getIterator3.default)(btns), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var btn = _step.value;
+
+                    if (text.includes(btn.innerHTML)) {
+                        btn.disabled = false;
+                        btn.style.backgroundColor = 'blue';
+                    } else {
+                        btn.disabled = true;
+                        btn.style.backgroundColor = 'grey';
+                    }
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+        }
+    }]);
+    return RobBtnUI;
+}();
+
+RobBtnUI.instance = null;
+
+exports.default = RobBtnUI;
+
+/***/ }),
+/* 110 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _classCallCheck2 = __webpack_require__(13);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = __webpack_require__(32);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _global = __webpack_require__(19);
+
+var _global2 = _interopRequireDefault(_global);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var StartBtnUI = function () {
+    function StartBtnUI() {
+        (0, _classCallCheck3.default)(this, StartBtnUI);
+    }
+
+    (0, _createClass3.default)(StartBtnUI, null, [{
+        key: 'show',
+        value: function show() {
+            if (StartBtnUI.instance == null) {
+                var startBtnContainer = document.createElement('div');
+                startBtnContainer.style.position = 'absolute';
+                startBtnContainer.style.width = '1000px';
+                startBtnContainer.style.height = '40px';
+                startBtnContainer.style.top = '50%';
+                startBtnContainer.style.left = '50%';
+                startBtnContainer.style.transform = 'translate(-50%)';
+                startBtnContainer.style.display = 'flex';
+                startBtnContainer.style.justifyContent = 'space-around';
+                startBtnContainer.style.alignItems = 'center';
+
+                var startBtn = document.createElement('button');
+                startBtn.innerHTML = '准备';
+
+                startBtnContainer.appendChild(startBtn);
+                startBtn.onclick = function () {
+                    StartBtnUI.sendReadyStatus(startBtn.innerHTML);
+                };
+
+                var bd = document.getElementsByTagName('body')[0];
+                bd.appendChild(startBtnContainer);
+                StartBtnUI.instance = startBtnContainer;
+            } else {
+                StartBtnUI.instance.style.display = 'flex';
+            }
+        }
+    }, {
+        key: 'hide',
+        value: function hide() {
+            if (StartBtnUI.instance != null) {
+                StartBtnUI.instance.style.display = 'none';
+            }
+        }
+    }, {
+        key: 'remove',
+        value: function remove() {
+            if (StartBtnUI.instance != null) {
+                var body = document.getElementsByTagName('body')[0];
+                body.removeChild(StartBtnUI.instance);
+                StartBtnUI.instance = null;
+            }
+        }
+    }, {
+        key: 'sendReadyStatus',
+        value: function sendReadyStatus(status) {
+            var socket = _global2.default.socket;
+            socket.emit(_global2.default.SOCKETIO_PLAYERREADY, status);
+            StartBtnUI.hide();
+        }
+    }]);
+    return StartBtnUI;
+}();
+
+StartBtnUI.instance = null;
+
+exports.default = StartBtnUI;
 
 /***/ })
 /******/ ]);
