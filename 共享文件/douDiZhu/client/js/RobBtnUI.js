@@ -20,30 +20,28 @@ class RobBtnUI
             let one_Btn = document.createElement('button');
             let two_Btn = document.createElement('button');
             let three_Btn = document.createElement('button');
+            let four_Btn = document.createElement('button');
 
             one_Btn.innerHTML = '1分';
             two_Btn.innerHTML = '2分';
             three_Btn.innerHTML = '3分';
+            four_Btn.innerHTML = '不叫';
 
             robBtnContainer.appendChild(one_Btn);
             robBtnContainer.appendChild(two_Btn);
             robBtnContainer.appendChild(three_Btn);
+            robBtnContainer.appendChild(four_Btn);
 
-            one_Btn.onclick = function()
+            //按钮点击，抢地主
+            let buttons = Array.from(robBtnContainer.getElementsByTagName('button'));
+            buttons.forEach((item)=>
             {
-                RobBtnUI.sendPoint(one_Btn.innerHTML);
-                RobBtnUI.hide();
-            };
-            two_Btn.onclick = function()
-            {
-                RobBtnUI.sendPoint(two_Btn.innerHTML);
-                RobBtnUI.hide();
-            };
-            three_Btn.onclick = function()
-            {
-                RobBtnUI.sendPoint(three_Btn.innerHTML);
-                RobBtnUI.hide();
-            };
+                item.onclick = function()
+                {
+                    RobBtnUI.sendPoint(item.innerHTML);
+                    RobBtnUI.hide();
+                };
+            });
 
             let bd = document.getElementsByTagName('body')[0];
             bd.appendChild(robBtnContainer);
@@ -115,6 +113,9 @@ class RobBtnUI
                 btn.style.backgroundColor = 'grey';
             }
         }
+
+        btns[btns.length-1].disabled = false;
+        btns[btns.length-1].style.backgroundColor = 'blue';
     }
 }
 

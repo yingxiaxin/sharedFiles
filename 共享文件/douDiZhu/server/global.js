@@ -20,5 +20,8 @@ G.SOCKETIO_ASSIGNLOSER = 'assignLoser'; //服务端发送
 G.SOCKETIO_ASSIGNDRAWCARD_ON = 'assignDrawCard_on'; //服务端发送
 G.SOCKETIO_ASSIGNDRAWCARD_OFF = 'assignDrawCard_off';   //服务端发送
 
+G.ROBPOINT = ['1分', '2分', '3分'];
+G.ROBPOINT_CURRENT = [];
+
 
 module.exports = G;

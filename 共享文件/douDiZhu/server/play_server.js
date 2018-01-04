@@ -67,7 +67,67 @@ class play_server
             //玩家抢地主
             socket.on(G.SOCKETIO_ROBLORD, (data)=>
             {
-                
+                if(data == '3分')
+                {
+                    socket.emit(G.SOCKETIO_ASSIGNLORD);
+                    let p = this.getCurrentPlayer();
+                    p.isLord = true;
+                }
+                else
+                {
+                    let p = this.getCurrentPlayer();
+                    if(data == '不叫')
+                    {
+                        p.giveUpLord = true;
+                    }
+                   
+                    let nxtP = this.nextPlayer();
+                    if(nxtP.giveUpLord != true)
+                    {
+                        this.setCurrentPlayer(nxtP);
+                        let nxtsocket = this.getSocket(nxtP.uid);
+
+                        let index = 0;
+                        for(let i=0; i<G.ROBPOINT_CURRENT.length; i++)
+                        {
+                            if(G.ROBPOINT_CURRENT[i] == data)
+                            {
+                                index = i;
+                            }
+                        }
+                        G.ROBPOINT_CURRENT = G.ROBPOINT_CURRENT.slice(index+1);
+                        nxtsocket.emit(G.SOCKETIO_ASSIGNROBLORD_ON, G.ROBPOINT_CURRENT.join('_'));
+                    }
+                    else
+                    {
+                        let nxt_nxtP = this.nextPlayer();
+
+                        if(nxt_nxtP.giveUpLord != true)
+                        {
+                            this.setCurrentPlayer(nxt_nxtP);
+                            let nxt_nxtsocket = this.getSocket(nxt_nxtP);
+
+                            let index = 0;
+                            for(let i=0; i<G.ROBPOINT_CURRENT.length; i++)
+                            {
+                                if(G.ROBPOINT_CURRENT[i] == data)
+                                {
+                                    index = i;
+                                }
+                            }
+                            G.ROBPOINT_CURRENT = G.ROBPOINT_CURRENT.slice(index+1);
+                            nxt_nxtsocket.emit(G.SOCKETIO_ASSIGNROBLORD_ON, G.ROBPOINT_CURRENT.join('_'));
+                        }
+                        else
+                        {
+                            let nxt_nxt_nxtP = this.nextPlayer();
+                            this.setCurrentPlayer(nxt_nxt_nxtP);
+                            let nxt_nxt_nxtsocket = this.getSocket(nxt_nxt_nxtP);
+
+                            nxt_nxt_nxtsocket.emit(G.SOCKETIO_ASSIGNLORD);
+                        }
+                    }
+                }
             });
 
             //玩家出牌
@@ -150,13 +210,14 @@ class play_server
 
     initPlayerGenerator()
     {
+        let list = this.playerList;
         let generator = function* ()
         {
             while(1)
             {
-                yield this.playerList[0];
-                yield this.playerList[1];
-                yield this.playerList[2];
+                yield list[0];
+                yield list[1];
+                yield list[2];
             }
         };
         this.playerGenerator = generator();
@@ -166,11 +227,20 @@ class play_server
 
     startRobLord()
     {
+        G.ROBPOINT_CURRENT = G.ROBPOINT.slice(0); //当前局的叫分
+
         let randomIndex = GameRule.random(0,2);
         this.setCurrentPlayer(this.playerList[randomIndex]);
 
-        let socket = this.getSocket(this.getCurrentPlayer().uid);
-        socket.emit(G.SOCKETIO_ASSIGNROBLORD_ON, 'robLord');
+        let socket = this.getSocket(this.getCurrentPlayer().uid);   //获取当前player的socket
+        socket.emit(G.SOCKETIO_ASSIGNROBLORD_ON, G.ROBPOINT_CURRENT.join('_'));
+
+        let others = this.getOtherPlayers();
+        others.forEach((item) => 
+        {
+            let skt = this.getSocket(item.uid);
+            skt.emit(G.SOCKETIO_ASSIGNROBLORD_OFF);
+        });
     }
 
     getSocket(socketid)
@@ -309,14 +379,39 @@ class play_server
 
     getCurrentPlayer()
     {
-        let players = this.playerList;
-        for(let p of players)
+        // let players = this.playerList;
+        // for(let p of players)
+        // {
+        //     if(p.isCurrentPlayer == true)
+        //     {
+        //         return p;
+        //     }
+        // }
+
+        let flag = true;
+        while(flag)
         {
+            let p = this.nextPlayer();
             if(p.isCurrentPlayer == true)
             {
+                flag = false;
                 return p;
             }
         }
+    }
+
+    getOtherPlayers()
+    {
+        let otherPlayerArray = [],
+            players = this.playerList;
+        for(let p of players)
+        {
+            if(p.isCurrentPlayer != true)
+            {
+                otherPlayerArray.push(p);
+            }
+        }
+        return otherPlayerArray;
     }
 
 
