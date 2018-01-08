@@ -26,7 +26,7 @@ window.G.init = function()
     G.CONTAINER_CLICK = 'auto';     //是否在某块区域上禁止鼠标操作
     G.CONTAINER_NO_CLICK = 'none';
 
-    G.DEALCARD_RATE = 100;  //发牌的快慢速率，默认100毫秒
+    G.DEALCARD_RATE = 60;  //发牌的快慢速率，默认100毫秒
     G.OVERLAP_FACTOR = 0.7;    //玩家牌不重叠的宽度比例
     G.OVERLAP_FACTOR_TTB = 0.07;
 
