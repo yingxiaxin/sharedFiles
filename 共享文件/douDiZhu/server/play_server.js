@@ -67,67 +67,76 @@ class play_server
             //玩家抢地主
             socket.on(G.SOCKETIO_ROBLORD, (data)=>
             {
-                if(data == '3分')
-                {
-                    socket.emit(G.SOCKETIO_ASSIGNLORD);
-                    let p = this.getCurrentPlayer();
-                    p.isLord = true;
-                }
-                else
-                {
-                    let p = this.getCurrentPlayer();
-                    if(data == '不叫')
-                    {
-                        p.giveUpLord = true;
-                    }
+                // if(data == '3分')
+                // {
+                //     socket.emit(G.SOCKETIO_ASSIGNLORD);
+                //     let p = this.getCurrentPlayer();
+                //     p.isLord = true;
+                // }
+                // else
+                // {
+                //     let p = this.getCurrentPlayer();
+                //     if(data == '不叫')
+                //     {
+                //         p.giveUpLord = true;
+                //     }
                    
-                    let nxtP = this.nextPlayer();
-                    if(nxtP.giveUpLord != true)
-                    {
-                        this.setCurrentPlayer(nxtP);
-                        let nxtsocket = this.getSocket(nxtP.uid);
+                //     let nxtP = this.nextPlayer();
+                //     if(nxtP.giveUpLord != true)
+                //     {
+                //         this.setCurrentPlayer(nxtP);
+                //         let nxtsocket = this.getSocket(nxtP.uid);
 
-                        let index = 0;
-                        for(let i=0; i<G.ROBPOINT_CURRENT.length; i++)
-                        {
-                            if(G.ROBPOINT_CURRENT[i] == data)
-                            {
-                                index = i;
-                            }
-                        }
-                        G.ROBPOINT_CURRENT = G.ROBPOINT_CURRENT.slice(index+1);
-                        nxtsocket.emit(G.SOCKETIO_ASSIGNROBLORD_ON, G.ROBPOINT_CURRENT.join('_'));
-                    }
-                    else
-                    {
-                        let nxt_nxtP = this.nextPlayer();
+                //         let index = 0;
+                //         for(let i=0; i<G.ROBPOINT_CURRENT.length; i++)
+                //         {
+                //             if(G.ROBPOINT_CURRENT[i] == data)
+                //             {
+                //                 index = i;
+                //             }
+                //         }
+                //         G.ROBPOINT_CURRENT = G.ROBPOINT_CURRENT.slice(index+1);
+                //         nxtsocket.emit(G.SOCKETIO_ASSIGNROBLORD_ON, G.ROBPOINT_CURRENT.join('_'));
+                //     }
+                //     else
+                //     {
+                //         let nxt_nxtP = this.nextPlayer();
 
-                        if(nxt_nxtP.giveUpLord != true)
-                        {
-                            this.setCurrentPlayer(nxt_nxtP);
-                            let nxt_nxtsocket = this.getSocket(nxt_nxtP);
+                //         if(nxt_nxtP.giveUpLord != true)
+                //         {
+                //             this.setCurrentPlayer(nxt_nxtP);
+                //             let nxt_nxtsocket = this.getSocket(nxt_nxtP);
 
-                            let index = 0;
-                            for(let i=0; i<G.ROBPOINT_CURRENT.length; i++)
-                            {
-                                if(G.ROBPOINT_CURRENT[i] == data)
-                                {
-                                    index = i;
-                                }
-                            }
-                            G.ROBPOINT_CURRENT = G.ROBPOINT_CURRENT.slice(index+1);
-                            nxt_nxtsocket.emit(G.SOCKETIO_ASSIGNROBLORD_ON, G.ROBPOINT_CURRENT.join('_'));
-                        }
-                        else
-                        {
-                            let nxt_nxt_nxtP = this.nextPlayer();
-                            this.setCurrentPlayer(nxt_nxt_nxtP);
-                            let nxt_nxt_nxtsocket = this.getSocket(nxt_nxt_nxtP);
+                //             let index = 0;
+                //             for(let i=0; i<G.ROBPOINT_CURRENT.length; i++)
+                //             {
+                //                 if(G.ROBPOINT_CURRENT[i] == data)
+                //                 {
+                //                     index = i;
+                //                 }
+                //             }
+                //             G.ROBPOINT_CURRENT = G.ROBPOINT_CURRENT.slice(index+1);
+                //             nxt_nxtsocket.emit(G.SOCKETIO_ASSIGNROBLORD_ON, G.ROBPOINT_CURRENT.join('_'));
+                //         }
+                //         else
+                //         {
+                //             let nxt_nxt_nxtP = this.nextPlayer();
+                //             this.setCurrentPlayer(nxt_nxt_nxtP);
+                //             let nxt_nxt_nxtsocket = this.getSocket(nxt_nxt_nxtP);
 
-                            nxt_nxt_nxtsocket.emit(G.SOCKETIO_ASSIGNLORD);
-                        }
-                    }
-                }
+                //             nxt_nxt_nxtsocket.emit(G.SOCKETIO_ASSIGNLORD);
+                //         }
+                //     }
+                // }
+
+
+                setInterval(()=>{
+                    let p = this.nextPlayer();
+                    this.setCurrentPlayer(p);
+                    let pp = this.getCurrentPlayer();
+                    global.console.log('uid: ' + p.uid);
+                    global.console.log('next uid: ' + pp.uid);
+                }, 1000);
             });
 
             //玩家出牌
@@ -365,39 +374,53 @@ class play_server
 
     setCurrentPlayer(player)
     {
-        let flag = true;
-        while(flag)
+        // let flag = true;
+        // while(flag)
+        // {
+        //     let p = this.nextPlayer();
+        //     if(p.name == player.name && p.uid == player.uid)
+        //     {
+        //         p.isCurrentPlayer = true;
+        //         flag = false;
+        //         this.nextPlayer();
+        //     }
+        // }
+
+        let players = this.playerList;
+        for(let p of players)
         {
-            let p = this.nextPlayer();
             if(p.name == player.name && p.uid == player.uid)
             {
                 p.isCurrentPlayer = true;
-                flag = false;
+            }
+            else
+            {
+                p.isCurrentPlayer = false;
             }
         }
     }
 
     getCurrentPlayer()
     {
-        // let players = this.playerList;
-        // for(let p of players)
-        // {
-        //     if(p.isCurrentPlayer == true)
-        //     {
-        //         return p;
-        //     }
-        // }
-
-        let flag = true;
-        while(flag)
+        let players = this.playerList;
+        for(let p of players)
         {
-            let p = this.nextPlayer();
             if(p.isCurrentPlayer == true)
             {
-                flag = false;
                 return p;
             }
         }
+
+        // let flag = true;
+        // while(flag)
+        // {
+        //     let p = this.nextPlayer();
+        //     if(p.isCurrentPlayer == true)
+        //     {
+        //         flag = false;
+        //         return p;
+        //     }
+        // }
     }
 
     getOtherPlayers()
