@@ -1,4 +1,4 @@
-import G from './start';
+import G from './global';
 
 class CardUI
 {
