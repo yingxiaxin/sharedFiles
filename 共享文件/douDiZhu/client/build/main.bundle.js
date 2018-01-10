@@ -4161,7 +4161,6 @@ var CardUI = function CardUI(num, type, iconPos, parentCon) {
         instanceDiv.style.position = 'absolute';
         instanceDiv.style.cursor = 'pointer';
         instanceDiv.style.userSelect = 'none';
-        // instanceDiv.style.backgroundImage = 'url(' + G.CADR_IMG_ADDR + ')';
 
         //如果不是玩家区域的牌，则显示牌背面
         instanceDiv.style.backgroundPosition = this.parentContainer === _start2.default.ownPlayerContainer ? iconPos : _start2.default.CARD_BACK_POS;
