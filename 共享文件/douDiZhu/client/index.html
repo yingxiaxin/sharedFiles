@@ -99,17 +99,16 @@
             height: 10rem;
             background-color: lightgoldenrodyellow;
         }
-        #startBtn
+
+        button
         {
             width: 10rem;
             height: 4rem;
-            position: absolute;
-            top: 65%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             border-radius: 0.5rem;
             background-color: blue;
             outline: none;
+            color:white;
+            font-size:2rem;
         }
 
         div[class='card']
@@ -118,17 +117,8 @@
             height: 176px;
             border-radius: 10px;
             background-image: url('./assets/poker.png');
-        }
-        /*花色和数字符号*/
-        div[class='card'] span
-        {
-            font-size: 2rem;
-        }
-        /*纸牌中心的花色符号*/
-        div[class='card'] i
-        {
-            font-size: 8rem;
-        }
+        }        
+       
     </style>
 </head>
 
@@ -155,9 +145,6 @@
     <div class="timer">
         <p style="color:black; font-size:2rem;">timer</p>
     </div>
-    <button id="startBtn">
-        <p style="color:white; font-size:2rem; margin:0; padding:0">start</p>
-    </button>
 
     
 </body>
