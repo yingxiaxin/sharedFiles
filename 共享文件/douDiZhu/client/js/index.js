@@ -64,10 +64,7 @@ ready(function()
     play.initPlayers();
     play.shuffleNewCardList();
     play.dealCards(play.cardList);
-<<<<<<< HEAD
     
-=======
->>>>>>> 228c7267828bc5959c4ddd3a9957d024db417efb
     
 });
 

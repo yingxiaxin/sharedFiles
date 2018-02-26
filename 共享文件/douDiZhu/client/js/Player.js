@@ -4,8 +4,7 @@ class Player
     {
         this.name = name;
         this.uid = uid;
-        this.isLord = false;       
-        this.giveUpLord = false;       
+        this.isLord = false;        
         this.nextPlayer = null;
         this.isReady = false;
         this.isLeave = false;
