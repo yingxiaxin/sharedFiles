@@ -12,6 +12,7 @@ class play_server
         this.rightPlayer = null;
         this.ownPlayer = null;
         this.playerList = [];
+        this.cardList = [];
 
         this.io = io;
         this.initSocketListener();
@@ -60,6 +61,9 @@ class play_server
                 if(isAllReady == true)
                 {
                     this.initPlayerGenerator();
+
+                    this.dealCards();
+
                     this.startRobLord();
                 }
             });
@@ -67,76 +71,62 @@ class play_server
             //玩家抢地主
             socket.on(G.SOCKETIO_ROBLORD, (data)=>
             {
-                // if(data == '3分')
-                // {
-                //     socket.emit(G.SOCKETIO_ASSIGNLORD);
-                //     let p = this.getCurrentPlayer();
-                //     p.isLord = true;
-                // }
-                // else
-                // {
-                //     let p = this.getCurrentPlayer();
-                //     if(data == '不叫')
-                //     {
-                //         p.giveUpLord = true;
-                //     }
-                   
-                //     let nxtP = this.nextPlayer();
-                //     if(nxtP.giveUpLord != true)
-                //     {
-                //         this.setCurrentPlayer(nxtP);
-                //         let nxtsocket = this.getSocket(nxtP.uid);
 
-                //         let index = 0;
-                //         for(let i=0; i<G.ROBPOINT_CURRENT.length; i++)
-                //         {
-                //             if(G.ROBPOINT_CURRENT[i] == data)
-                //             {
-                //                 index = i;
-                //             }
-                //         }
-                //         G.ROBPOINT_CURRENT = G.ROBPOINT_CURRENT.slice(index+1);
-                //         nxtsocket.emit(G.SOCKETIO_ASSIGNROBLORD_ON, G.ROBPOINT_CURRENT.join('_'));
-                //     }
-                //     else
-                //     {
-                //         let nxt_nxtP = this.nextPlayer();
+                let self = this;
+                let p = this.getPlayer(socket.id);
+                pollingLord(p, data);
 
-                //         if(nxt_nxtP.giveUpLord != true)
-                //         {
-                //             this.setCurrentPlayer(nxt_nxtP);
-                //             let nxt_nxtsocket = this.getSocket(nxt_nxtP);
+                function pollingLord(player, data)
+                {
+                    let isAllGiveUp = self.isAllGiveUpLordExcpt(player);
+                    if(isAllGiveUp == true)
+                    {
+                        if(data == '不叫')
+                        {
+                            self.startRobLord();
+                        }
+                        else
+                        {
+                            G.POINT = data;
+                            //指定该玩家为地主，开始发牌等
 
-                //             let index = 0;
-                //             for(let i=0; i<G.ROBPOINT_CURRENT.length; i++)
-                //             {
-                //                 if(G.ROBPOINT_CURRENT[i] == data)
-                //                 {
-                //                     index = i;
-                //                 }
-                //             }
-                //             G.ROBPOINT_CURRENT = G.ROBPOINT_CURRENT.slice(index+1);
-                //             nxt_nxtsocket.emit(G.SOCKETIO_ASSIGNROBLORD_ON, G.ROBPOINT_CURRENT.join('_'));
-                //         }
-                //         else
-                //         {
-                //             let nxt_nxt_nxtP = this.nextPlayer();
-                //             this.setCurrentPlayer(nxt_nxt_nxtP);
-                //             let nxt_nxt_nxtsocket = this.getSocket(nxt_nxt_nxtP);
+                        }
+                    }
+                    else
+                    {
+                        if(data == '3分')
+                        {
+                            let socket = self.getSocket(player.uid);
+                            self.setGiveUpLordExcpt(player);
+                            socket.emit(G.SOCKETIO_ASSIGNLORD);
+                        }
+                        else if(data == '不叫')
+                        {
+                            player.giveUpLord = true;
+                            let nxtp = self.nextPlayer();
+                            let nxtsocket = self.getSocket(nxtp.uid);
 
-                //             nxt_nxt_nxtsocket.emit(G.SOCKETIO_ASSIGNLORD);
-                //         }
-                //     }
-                // }
+                            nxtsocket.emit(G.SOCKETIO_ASSIGNROBLORD_ON, G.ROBPOINT_CURRENT.join('_'));
+                        }
+                        else
+                        {
+                            let nxtp = self.nextPlayer();
+                            let nxtsocket = self.getSocket(nxtp.uid);
 
+                            let index = 0;
+                            for(let i=0; i<G.ROBPOINT_CURRENT.length; i++)
+                            {
+                                if(data == G.ROBPOINT_CURRENT[i])
+                                {
+                                    index = i;
+                                }
+                            }
+                            G.ROBPOINT_CURRENT = G.ROBPOINT_CURRENT.slice(index+1);
 
-                setInterval(()=>{
-                    let p = this.nextPlayer();
-                    this.setCurrentPlayer(p);
-                    let pp = this.getCurrentPlayer();
-                    global.console.log('uid: ' + p.uid);
-                    global.console.log('next uid: ' + pp.uid);
-                }, 1000);
+                            nxtsocket.emit(G.SOCKETIO_ASSIGNROBLORD_ON, G.ROBPOINT_CURRENT.join('_'));
+                        }
+                    }                    
+                }
             });
 
             //玩家出牌
@@ -160,7 +150,7 @@ class play_server
         {
             if(this.hasPlayer(socketid) == false)
             {
-                let newPlayer = new Player(socketid, socketid);
+                let newPlayer = new Player(socketid, socketid); //player的name和uid都是socketid
                 this.playerList.push(newPlayer);
             }
             return true;
@@ -239,6 +229,12 @@ class play_server
         G.ROBPOINT_CURRENT = G.ROBPOINT.slice(0); //当前局的叫分
 
         let randomIndex = GameRule.random(0,2);
+
+        let p = this.nextPlayer();
+        while(!(p.uid == this.playerList[randomIndex].uid && p.name == this.playerList[randomIndex].name))
+        {
+            p = this.nextPlayer();
+        }
         this.setCurrentPlayer(this.playerList[randomIndex]);
 
         let socket = this.getSocket(this.getCurrentPlayer().uid);   //获取当前player的socket
@@ -264,11 +260,37 @@ class play_server
         return null;
     }
 
+    setGiveUpLordExcpt(player)
+    {
+        for(let p of this.playerList)
+        {
+            if(p.uid == player.uid && p.name == player.name)
+            {
+                p.giveUpLord  = false;
+            }
+            else
+            {
+                p.giveUpLord = true;
+            }
+        }
+    }
+
+    isAllGiveUpLordExcpt(player)
+    {
+        for(let p of this.playerList)
+        {
+            if(p.uid != player.uid && p.name != player.name)
+            {
+                if(p.giveUpLord == false)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     /******************************************* 发牌阶段 ***********************************************/
-
-    /******************************************* 打牌阶段 ***********************************************/
-
-
 
     shuffleNewCardList()
     {
@@ -277,9 +299,9 @@ class play_server
 
     /**
      * 从一个总的牌数组中随机抽取指定数量的牌
-     * @param {需要分发掉的总的牌的数据数组} array 
-     * @param {需要从总牌中发多少张出来} num 
-     * @param {发出来的牌的数据数组} targetArray 
+     * @param {需要分发掉的总的牌的数据数组} array
+     * @param {需要从总牌中发多少张出来} num
+     * @param {发出来的牌的数据数组} targetArray
      */
     randomShuffleCards(array, num, targetArray)
     {
@@ -366,26 +388,17 @@ class play_server
         }, G.DEALCARD_RATE);
     }
 
+    /******************************************* 打牌阶段 ***********************************************/
+
     nextPlayer()
     {
         let p = this.playerGenerator.next().value;
+        this.setCurrentPlayer(p);
         return p;
     }
 
     setCurrentPlayer(player)
     {
-        // let flag = true;
-        // while(flag)
-        // {
-        //     let p = this.nextPlayer();
-        //     if(p.name == player.name && p.uid == player.uid)
-        //     {
-        //         p.isCurrentPlayer = true;
-        //         flag = false;
-        //         this.nextPlayer();
-        //     }
-        // }
-
         let players = this.playerList;
         for(let p of players)
         {
@@ -410,17 +423,6 @@ class play_server
                 return p;
             }
         }
-
-        // let flag = true;
-        // while(flag)
-        // {
-        //     let p = this.nextPlayer();
-        //     if(p.isCurrentPlayer == true)
-        //     {
-        //         flag = false;
-        //         return p;
-        //     }
-        // }
     }
 
     getOtherPlayers()

@@ -22,6 +22,7 @@ G.SOCKETIO_ASSIGNDRAWCARD_OFF = 'assignDrawCard_off';   //服务端发送
 
 G.ROBPOINT = ['1分', '2分', '3分'];
 G.ROBPOINT_CURRENT = [];
+G.POINT = '';   //抢地主最终的分值
 
 
 module.exports = G;
