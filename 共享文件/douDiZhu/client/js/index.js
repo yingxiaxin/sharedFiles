@@ -65,7 +65,6 @@ ready(function()
     play.shuffleNewCardList();
     play.dealCards(play.cardList);
     
-    
 });
 
 
