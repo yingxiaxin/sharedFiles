@@ -59,7 +59,7 @@ class StartBtnUI
         let socket = G.socket;
         socket.emit(G.SOCKETIO_PLAYERREADY, status);
         StartBtnUI.hide();
-    }
+    } 
 
 }
 
