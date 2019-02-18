@@ -1,0 +1,17 @@
+
+1、微信pc版本		--重新下载
+2、QQ			--重新下载
+3、KM Player		--备份
+4、vscode		--重新下载
+5、nodejs		--重新下载
+6、chrome		--重新下载
+7、QQ浏览器		--重新下载
+8、wendows激活工具	--备份
+9、office2013		--备份
+10、office visio	--备份
+11、snagit		--重新下载
+12、colorpix		--备份
+13、git			--重新下载
+14、chrome插件		--重新下载
+15、notepad++		--备份
+16、文件比对工具	--备份
