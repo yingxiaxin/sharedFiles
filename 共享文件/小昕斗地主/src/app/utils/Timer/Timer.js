@@ -1,5 +1,5 @@
 class Timer {
-    constructor(time) {
+    constructor(time = '10s') {
         this.time = null;
         this.onStartFn = null;
         this.onStopFn = null;
