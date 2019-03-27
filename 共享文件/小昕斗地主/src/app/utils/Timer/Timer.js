@@ -80,15 +80,17 @@ class Timer {
         this.countdown = this.countdown - 1000;
     }
 
-    onTimerStart(fn) {
+    setOnTimerStart(fn) {
         this.onStartFn = fn;
     }
 
-    onTimerStop(fn) {
+    setOnTimerStop(fn) {
         this.onStopFn = fn;
     }
 
-    onTimerTick(fn) {
+    setOnTimerTick(fn) {
         this.onTickFn = fn;
     }
 }
+
+export default Timer;
