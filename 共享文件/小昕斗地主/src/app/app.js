@@ -7,6 +7,7 @@ import Clock from './components/Clock/Clock';
 import ButtonBar from './components/ButtonBar/ButtonBar';
 import Connector from './components/Connector';
 import CoreExecutor from './components/CoreExecutor';
+import Card from './components/Card/Card';
 
 class App {
     constructor(id) {
@@ -19,13 +20,13 @@ class App {
         this.ele = document.createElement('div');
         this.ele.id = 'x_doudizhu';
 
-        // this.initMainPlayer();
+        this.initMainPlayer();
         // this.initPrevPlayer();
-        // this.initNextPlayer();
-        // this.initCardPool();
-        // this.initExtraPool();
+        this.initNextPlayer();
+        this.initCardPool();
+        this.initExtraPool();
         this.initClock();
-        // this.initButtonBar();
+        this.initButtonBar();
         // this.initConnector();
         // this.initCoreExecutor();
         // this.bindExecutorToConnector();
@@ -64,9 +65,6 @@ class App {
     }
 
     initClock() {
-        // const clock = new Clock(this);
-        // this.clock = clock;
-
         const clock = new Clock(this);
         this.clock = clock;
         setTimeout(() => {
@@ -115,6 +113,25 @@ class App {
         // this.ele.append(this.clock.ele);
         // this.ele.append(this.buttonBar.ele);
         container.append(this.ele);
+
+        // this.buttonBar.toReadyState();
+        // let data = [{iconPos: '-1729px -100px', type: '0', val: 17},
+        // {iconPos: '-1860px -100px', type: '0', val: 16},
+        // {iconPos: '-35px -100px', type: '1', val: 14},
+        // {iconPos: '-166px -100px', type: '1', val: 15},
+        // {iconPos: '-297px -100px', type: '1', val: 3},
+        // {iconPos: '-556px -100px', type: '1', val: 4}];
+
+        let data = [{iconPos: '-1729px -100px', type: '0', val: 17},
+        {iconPos: '-1860px -100px', type: '0', val: 16},
+        {iconPos: '-35px -100px', type: '1', val: 14}];
+        
+        // this.mainPlayer.receiveCards(data);
+        // this.mainPlayer.turnOverCards();
+
+        // this.extraPool.receiveCards(data);
+        // this.extraPool.turnOverCards();
+        window.app = this;
     }
 }
 

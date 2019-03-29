@@ -1,5 +1,5 @@
-import { getTimerInstance } from './../../utils/Timer/SingletonTimer';
-import ParticleBoard from './../../utils/ParticleBoard/ParticleBoard';
+import { getTimerInstance } from './Timer/SingletonTimer';
+import ParticleBoard from './ParticleBoard/ParticleBoard';
 
 class Clock {
     constructor(app) {
@@ -16,7 +16,7 @@ class Clock {
         this.ele = document.createElement('div');
         this.ele.id = 'clock';
         // this.ele.innerHTML = `<span>30</span>`;
-        this.particleBoard = new ParticleBoard(this.ele, 200, 100, 100, 400, 4, 3);
+        this.particleBoard = new ParticleBoard(this.ele, 150, 100, 100, 400, 4, 3);
 
 
         this.setOnClockTick(this.updateText.bind(this));

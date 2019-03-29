@@ -7,23 +7,175 @@ body {
     text-decoration: none;
     overflow: hidden;
     box-sizing: border-box;
+
+    /*
+    * 整个app下的样式
+    */
     #root {
         width: 100%;
         height: 100%;
+
+        /*
+        * 斗地主容器div下的样式
+        */
         #x_doudizhu {
             width: 100%;
             height: 100%;
             position: relative;
+            user-select: none;
+
+            /*
+            * 倒计时钟下的样式
+            */
             #clock {
-                width: 200px;
+                width: 150px;
                 height: 100px;
                 position: absolute;
-                top: 0;
-                left: 1000px;
+                top: 20px;
+                right: 300px;
                 background-color: #333333;
                 border: 5px solid #272E38;
                 border-radius: 5px;
             }
+
+            /*
+            * 每张扑克牌的样式
+            */
+            .card {
+                width: 114px;
+                height: 176px;
+                border-radius: 10px;
+                background-image: url(./app/static/poker.png);
+                position: absolute;
+                transition: top .1s ease-in-out;
+                top: 0;
+
+                /*
+                * 扑克牌是反面，也就是其他玩家的扑克牌的样式
+                * 做法是添加isback类名，当具有这个类名的扑克牌div，用伪元素覆盖其本身
+                */
+                &.isback {
+                    &::before {
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        top: 0;
+                        left: 0;
+                        content: '';
+                        border-radius: 10px;
+                        background-image: url(./app/static/poker.png);
+                        background-position: -1729px -671px;
+                    }
+                }
+
+                /*
+                * 扑克牌选中样式，选中的拍会向上移动一小段距离
+                */
+                &.selected {
+                    top: -30px;
+                }
+            }
+
+            /*
+            * 按钮组的样式
+            */
+            #buttonBar {
+                position: absolute;
+                width: 600px;
+                display: flex;
+                justify-content: center;
+                border: 1px solid black;
+                left: 50%;
+                transform: translate(-50%, 0);
+                bottom: 250px;
+
+                span {
+                    display: inline-block;
+                    height: 40px;
+                    line-height: 40px;
+                    padding: 0 8px;
+                    margin: 0 15px;
+                    background-color: #3FA2EF;
+                    color: white;
+                    font-size: 24px;
+                    font-family: 'Courier New', Courier, monospace;
+                    border-radius: 5px;
+                    box-shadow: 3px 3px 3px 0 rgba(33, 33, 33, .3);
+                    cursor: pointer;
+
+                    &:hover {
+                        background-color: rgb(12, 138, 235);
+                        font-weight: bold;
+                    }
+                }
+            }
+
+            /*
+            * 下一玩家，也就是左侧玩家的区域
+            */
+            #nextPlayer {
+                width: 115px;
+                height: 600px;
+                position: absolute;
+                left: 40px;
+                top: 50%;
+                transform: translate(0, -50%);
+                border: 1px solid black;
+            }
+
+            /*
+            * 玩家的手牌区域
+            */
+            #mainPlayer {
+                width: 1650px;
+                height: 176px;
+                position: absolute;
+                left: 50%;
+                bottom: 20px;
+                transform: translate(-50%, 0);
+                border: 1px solid black;
+                cursor: pointer;
+            }
+
+            /*
+            * 底牌区域
+            */
+            #extraPool {
+                width: 400px;
+                height: 176px;
+                position: absolute;
+                left: 50%;
+                top: 20px;
+                transform: translate(-50%, 0);
+                border: 1px solid black;
+                cursor: pointer;
+            }
+
+            /*
+            * 中央的出牌区域
+            */
+            #cardPool {
+                width: 1650px;
+                height: 176px;
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                border: 1px solid black;
+                cursor: pointer;
+            }
         }
+    }
+
+    /*
+    * 公共样式
+    */
+    .hide {
+        display: none;
+    }
+
+    .disabled {
+        background-color: #F5F5F5;
+        pointer-events: none;
     }
 }
