@@ -60,22 +60,28 @@ class ButtonBar {
         const childs = Array.from(target.parentElement.children);
 
         // 禁用所按的按钮
-        Util.doFnAll(childs, Util.addClassName, 'disabled');
-        Util.doFnExcept(childs, target, Util.removeClassName, 'disabled');
+        // Util.doFnAll(childs, Util.addClassName, 'disabled');
+        // Util.doFnExcept(childs, target, Util.removeClassName, 'disabled');
         switch (target.id) {
             case 'noDeal': {
-                // 调用coreExecutor的方法发送抢地主信息
+                // 调用coreExecutor的方法发送出牌信息
                 this.clickDealStatus({ deal: Constants.NO_DEAL });
+
+                // 在不出牌，或已经出牌后，隐藏按钮
+                this.hideAll();
                 break;
             }
             case 'cancelDeal': {
-                // 调用coreExecutor的方法发送抢地主信息
+                // 调用coreExecutor的方法发送出牌信息
                 this.clickDealStatus({ deal: Constants.CANCEL_DEAL });
                 break;
             }
             case 'deal': {
-                // 调用coreExecutor的方法发送抢地主信息
+                // 调用coreExecutor的方法发送出牌信息
                 this.clickDealStatus({ deal: Constants.DEAL });
+
+                // 在不出牌，或已经出牌后，隐藏按钮
+                this.hideAll();
                 break;
             }
         }

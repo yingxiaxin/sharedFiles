@@ -19,11 +19,11 @@ class CardPool {
     }
 
     /**
-     * 收到牌，将原有的牌数据数组与新收到的数据相结合，并刷新
+     * 收到牌，唯独出牌区，收到牌后，直接赋予给cardData，而不是将两个数据连起来
      * @param {*} data 
      */
     receiveCards(data) {
-        this.cardData = this.cardData.concat(data);
+        this.cardData = data;
 
         this.refresh();
     }

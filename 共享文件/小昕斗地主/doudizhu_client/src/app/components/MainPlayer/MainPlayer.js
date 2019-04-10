@@ -147,6 +147,7 @@ class MainPlayer {
         this.sortCards();
         this.renderCards();
         this.arrangeCards();
+        this.turnOverCards();
     }
 
     /**
@@ -158,15 +159,15 @@ class MainPlayer {
      */
     dealCards() {
         let dealcardData = [];
-        // 1、重新获得cardData
-        this.cardData = this.cardData.filter((item) => {
-            this.selectedCards.forEach((card) => {
-                // 将选中牌区的牌的数据对象放入数组
-                let obj = Object.assign({}, card.cardData);
-                dealcardData.push(obj);
 
-                // 根据判断返回cardData里剩余的牌
-                if (item.type === card.cardData.type && item.val === card.cardData.val) {
+        this.selectedCards.forEach((card) => {
+            // 将选中牌区的牌的数据对象放入数组
+            let obj = Object.assign({}, card.cardData);
+            dealcardData.push(obj);
+
+            this.cardData = this.cardData.filter((item) => {
+                 // 根据判断返回cardData里剩余的牌
+                 if (item.type === card.cardData.type && item.val === card.cardData.val) {
                     return false;
                 } else {
                     return true;
@@ -193,14 +194,14 @@ class MainPlayer {
 
     /**
      * 对牌进行排列
-     * 每张牌的高度是114px，每张牌比上一张移动80px，那么所有牌的总宽度是114+(n-1)*80
+     * 每张牌的高度是114px，每张牌比上一张移动60px，那么所有牌的总宽度是114+(n-1)*60
      * 玩家牌区的宽度设置为1650px
-     * 那么第一张牌的left值应为 (1650/2 - (114+(n-1)*80)/2)，以后每张牌递增80
+     * 那么第一张牌的left值应为 (1650/2 - (114+(n-1)*60)/2)，以后每张牌递增60
      */
     arrangeCards() {
         const len = this.cards.length;
         const cardW = 114;
-        const deltaW = 80;
+        const deltaW = 60;
         const W = 1650;
         let left = (W / 2 - (cardW + (len - 1) * deltaW) / 2);
         this.cards.forEach((item) => {
@@ -223,8 +224,8 @@ class MainPlayer {
 
     /**
      * 对牌进行排序，按照习惯从左往右依次由大到小
-     * 牌的数据中，花色按类型type区分，那么大小王type值最小，放最左侧
-     * 同花色的牌，val值大的放左侧
+     * 牌的数据中，花色按类型type区分，那么大小王value值最大，放最左侧
+     * 同val的牌，type值大的放左侧
      * 数组的排序函数中，排在前面的返回小于0的值，排在后的返回大于0的值
      */
     sortCards() {
@@ -233,14 +234,14 @@ class MainPlayer {
             const pval = parseInt(prev.val);
             const ntype = parseInt(next.type);
             const nval = parseInt(next.val);
-            if (ptype < ntype) {
-                return -1;
-            } else if (ptype === ntype) {
-                if (pval > nval) {
+            if (pval < nval) {
+                return 1;
+            } else if (pval === nval) {
+                if (ptype > ntype) {
                     return -1;
                 }
             } else {
-                return 1;
+                return -1;
             }
         });
     }

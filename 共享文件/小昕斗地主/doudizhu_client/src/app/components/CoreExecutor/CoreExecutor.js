@@ -48,6 +48,7 @@ class CoreExecutor {
 
         this.prevPlayer.setPlayerInfo(this._playerList[prevIndex]);
         this.nextPlayer.setPlayerInfo(this._playerList[nextIndex]);
+        this.mainPlayer.setPlayerInfo(this._playerList[selfIndex]);
     }
 
     /***************************************************************************************************************************** */
@@ -82,9 +83,12 @@ class CoreExecutor {
         // 切换buttonBar到全隐藏状态
         this.buttonBar.hideAll();
 
-        // 然后将牌加入手牌区域
-        let cardData = info.data.cards;
-        this.mainPlayer.receiveCards(cardData);
+        let shuffled = info.data.shuffled;
+        shuffled.forEach((item) => {
+            let player = this.findPlayerById(item.playerid);
+            let cardData = item.cards;
+            player.receiveCards(cardData);
+        });
     }
 
     /**

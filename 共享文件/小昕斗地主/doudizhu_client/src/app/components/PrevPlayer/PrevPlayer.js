@@ -7,7 +7,7 @@ class PrevPlayer {
         this.cards = [];
         this.cardData = [];
         this.selectedCards = [];
-        this.playerInfo = { id: null, name: null, score: 0, isLord: false};
+        this.playerInfo = { id: null, name: null, score: 0, isLord: false };
 
         this.init();
     }
@@ -19,7 +19,7 @@ class PrevPlayer {
         this.cards = [];
         this.cardData = [];
         this.selectedCards = [];
-        this.playerInfo = { id: null, name: null, score: 0, isLord: false};
+        this.playerInfo = { id: null, name: null, score: 0, isLord: false };
     }
 
     init() {
@@ -58,8 +58,8 @@ class PrevPlayer {
     }
 
     dealCards(cards) {
-        this.cardData = this.cardData.filter((item) => {
-            cards.forEach((card) => {
+        cards.forEach((card) => {
+            this.cardData = this.cardData.filter((item) => {
                 if (item.type === card.type && item.val === card.val) {
                     return false;
                 } else {
@@ -111,14 +111,14 @@ class PrevPlayer {
             const pval = parseInt(prev.val);
             const ntype = parseInt(next.type);
             const nval = parseInt(next.val);
-            if (ptype < ntype) {
-                return -1;
-            } else if (ptype === ntype) {
-                if (pval > nval) {
+            if (pval < nval) {
+                return 1;
+            } else if (pval === nval) {
+                if (ptype > ntype) {
                     return -1;
                 }
             } else {
-                return 1;
+                return -1;
             }
         });
     }
