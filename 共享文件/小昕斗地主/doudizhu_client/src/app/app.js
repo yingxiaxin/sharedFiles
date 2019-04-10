@@ -28,7 +28,9 @@ class App {
         this.initButtonBar();
         this.initConnector();
         this.initCoreExecutor();
+
         this.bindExecutorToConnector();
+        this.bindExecutorToButtonBar();
 
         this.render();
     }
@@ -99,6 +101,10 @@ class App {
 
     bindExecutorToConnector() {
         this.connector.setExecutor(this.coreExecutor);
+    }
+
+    bindExecutorToButtonBar() {
+        this.buttonBar.registerExecutor(this.coreExecutor);
     }
 
     render() {

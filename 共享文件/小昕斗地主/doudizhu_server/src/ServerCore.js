@@ -274,7 +274,7 @@ class ServerCore {
     rcvPlayerCompete(socket, data) {
         let player = this.findPlayerBySocket(socket);
         let info = JSON.parse(data);
-        let score = parseInt(info.data.compete);
+        let score = parseInt(info.compete);
 
         // 向其他玩家广播抢地主的最新信息
         this.broadcastCompeteInfo(player, score);

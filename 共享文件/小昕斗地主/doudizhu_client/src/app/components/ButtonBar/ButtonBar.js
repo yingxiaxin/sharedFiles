@@ -1,5 +1,5 @@
 import Util from './../../utils/Util';
-import * as Constants from './../../utils/Constants';
+import Constants from './../../utils/Constants';
 
 class ButtonBar {
     constructor(app) {
@@ -66,14 +66,17 @@ class ButtonBar {
             case 'noDeal': {
                 // 调用coreExecutor的方法发送抢地主信息
                 this.clickDealStatus({ deal: Constants.NO_DEAL });
+                break;
             }
             case 'cancelDeal': {
                 // 调用coreExecutor的方法发送抢地主信息
                 this.clickDealStatus({ deal: Constants.CANCEL_DEAL });
+                break;
             }
             case 'deal': {
                 // 调用coreExecutor的方法发送抢地主信息
                 this.clickDealStatus({ deal: Constants.DEAL });
+                break;
             }
         }
     }
@@ -103,18 +106,22 @@ class ButtonBar {
             case 'one': {
                 // 调用coreExecutor的方法发送抢地主信息
                 this.clickCompeteStatue({ compete: Constants.SCORE_ONE });
+                break;
             }
             case 'two': {
                 // 调用coreExecutor的方法发送抢地主信息
                 this.clickCompeteStatue({ compete: Constants.SCORE_TWO });
+                break;
             }
             case 'three': {
                 // 调用coreExecutor的方法发送抢地主信息
                 this.clickCompeteStatue({ compete: Constants.SCORE_THREE });
+                break;
             }
             case 'zero': {
                 // 调用coreExecutor的方法发送抢地主信息
                 this.clickCompeteStatue({ compete: Constants.SCORE_ZERO });
+                break;
             }
         }
     }
@@ -154,7 +161,6 @@ class ButtonBar {
      * @param {*} status 
      */
     clickReadyStatus(status) {
-        console.log(status);
         this.coreExecutor.sendReadyToServer(status);
     }
 
