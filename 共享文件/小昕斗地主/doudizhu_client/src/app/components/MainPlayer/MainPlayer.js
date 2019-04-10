@@ -7,8 +7,19 @@ class MainPlayer {
         this.cards = [];
         this.cardData = [];
         this.selectedCards = [];
+        this.playerInfo = { id: null, name: null, score: 0, isLord: false};
 
         this.init();
+    }
+
+    /**
+     * 重置信息
+     */
+    reset() {
+        this.cards = [];
+        this.cardData = [];
+        this.selectedCards = [];
+        this.playerInfo = { id: null, name: null, score: 0, isLord: false};
     }
 
     init() {
@@ -101,6 +112,17 @@ class MainPlayer {
     }
 
     /**
+     * 将所有选中的牌取消
+     * 用于在出牌阶段，点击“取消”按钮的时候
+     */
+    cancelSelectedCards() {
+        this.selectedCards.forEach((item) => {
+            item.setSelected();
+        });
+        this.setSelectedCards();
+    }
+
+    /**
      * 收到牌，将原有的牌数据数组与新收到的数据相结合，并刷新
      * @param {*} data 
      */
@@ -111,16 +133,53 @@ class MainPlayer {
     }
 
     /**
+     * 清除手牌区域
+     */
+    clearCardContainer() {
+        this.ele.innerHTML = '';
+    }
+
+    /**
      * 刷新牌，首先重新排序，然后重新生成牌，并重新计算位置
      */
     refresh() {
+        this.clearCardContainer();
         this.sortCards();
         this.renderCards();
         this.arrangeCards();
     }
 
+    /**
+     * 出牌
+     * 1、将选中牌的牌数据与cardData相比较，通过filter函数得到新的cardData
+     * 2、将选中牌区的牌的数据对象加入数组返回
+     * 3、通过新的cardData重新生成手牌
+     * 4、重置选中牌数组
+     */
     dealCards() {
+        let dealcardData = [];
+        // 1、重新获得cardData
+        this.cardData = this.cardData.filter((item) => {
+            this.selectedCards.forEach((card) => {
+                // 将选中牌区的牌的数据对象放入数组
+                let obj = Object.assign({}, card.cardData);
+                dealcardData.push(obj);
 
+                // 根据判断返回cardData里剩余的牌
+                if (item.type === card.cardData.type && item.val === card.cardData.val) {
+                    return false;
+                } else {
+                    return true;
+                }
+            });
+        });
+
+        // 2、刷新手牌区
+        this.refresh();
+
+        // 3、重置选中牌数组
+        this.setSelectedCards();
+        return dealcardData;
     }
 
     /**
@@ -184,6 +243,14 @@ class MainPlayer {
                 return 1;
             }
         });
+    }
+
+    /**
+     * 设置玩家的信息
+     * @param {*} info 
+     */
+    setPlayerInfo(info) {
+        this.playerInfo = Object.assign(this.playerInfo, info);
     }
 
     render() {

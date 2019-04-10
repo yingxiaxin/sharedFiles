@@ -33,6 +33,7 @@ class ButtonBar {
         this.ele = btnBar;
 
         this.addListeners();
+        this.hideAll();         // 起初先隐藏所有内容
         this.render();
     }
 

@@ -45,6 +45,10 @@ class ServerCore {
         if (isExist) {
             let p = this.findPlayer(player);
             p.id = player.id;
+        } else if (this.playerList.length == 2) {
+            this.playerList.push(player);
+            this.onPlayerConnected(player);
+            this.readyToStart();
         } else if (this.playerList.length < 3) {
             this.playerList.push(player);
             this.onPlayerConnected(player);
@@ -169,6 +173,18 @@ class ServerCore {
     }
 
     /*****************************************游戏开始*********************************************************************************** */
+
+    /**
+     * 玩家满3人，游戏可以开始
+     */
+    readyToStart() {
+        // 发送玩家列表
+        this.sendPlayerList();
+
+        // 发送游戏可以开始的事件
+        this.onStartGame();
+    }
+
     /**
     * 开始游戏，将标识符设为true
     */
@@ -179,7 +195,7 @@ class ServerCore {
         this.isPlaying = true;
         global.console.log('游戏开始');
 
-        this.shuffleCards();
+        this.shuffleCards();            // 发牌
     }
 
     /**
@@ -199,6 +215,23 @@ class ServerCore {
         // 恢复每个玩家的原始数据
         this.playerList.forEach((item) => {
             item.refresh();
+        })
+    }
+
+    /**
+     * 向客户端发送玩家列表信息，使得客户端能够确定上家和下家
+     */
+    sendPlayerList() {
+        let pList = this.playerList.map((item) => {
+            let p = {};
+            p.id = item.id;
+            p.origin = item.origin;
+            p.address = item.address;
+            return p;
+        });
+
+        this.playerList.forEach((item) => {
+            item.socket.emit(Constants.SEND_ALL_PLAYERLIST, JSON.stringify({ message: '玩家列表', data: { playerList: pList } }));
         })
     }
 
@@ -389,7 +422,7 @@ class ServerCore {
     broadcastDealInfo(player) {
         let players = this.getPlayersExcept(player);
         players.forEach((item) => {
-            item.socket.emit(Constants.SEND_ALL_DEAL, JSON.stringify({ message: '其他玩家出牌', data: { id: player.id, deal: this.lastDeal } }));
+            item.socket.emit(Constants.SEND_ALL_DEAL, JSON.stringify({ message: '其他玩家出牌', data: { playerid: player.id, deal: this.lastDeal } }));
         });
     }
 

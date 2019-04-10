@@ -7,9 +7,6 @@ import Clock from './components/Clock/Clock';
 import ButtonBar from './components/ButtonBar/ButtonBar';
 import Connector from './components/Connector';
 import CoreExecutor from './components/CoreExecutor';
-import Card from './components/Card/Card';
-
-import io from 'socket.io-client';
 
 class App {
     constructor(id) {
@@ -23,15 +20,15 @@ class App {
         this.ele.id = 'x_doudizhu';
 
         this.initMainPlayer();
-        // this.initPrevPlayer();
+        this.initPrevPlayer();
         this.initNextPlayer();
         this.initCardPool();
         this.initExtraPool();
         this.initClock();
         this.initButtonBar();
-        // this.initConnector();
-        // this.initCoreExecutor();
-        // this.bindExecutorToConnector();
+        this.initConnector();
+        this.initCoreExecutor();
+        this.bindExecutorToConnector();
 
         this.render();
     }
@@ -107,13 +104,13 @@ class App {
     render() {
         const container = document.getElementById(this.parentId);
 
-        // this.ele.append(this.mainPlayer.ele);
-        // this.ele.append(this.prevPlayer.ele);
-        // this.ele.append(this.nextPlayer.ele);
-        // this.ele.append(this.cardPool.ele);
-        // this.ele.append(this.extraPool.ele);
-        // this.ele.append(this.clock.ele);
-        // this.ele.append(this.buttonBar.ele);
+        this.ele.append(this.mainPlayer.ele);
+        this.ele.append(this.prevPlayer.ele);
+        this.ele.append(this.nextPlayer.ele);
+        this.ele.append(this.cardPool.ele);
+        this.ele.append(this.extraPool.ele);
+        this.ele.append(this.clock.ele);
+        this.ele.append(this.buttonBar.ele);
         container.append(this.ele);
 
         // this.buttonBar.toReadyState();
@@ -124,9 +121,9 @@ class App {
         // {iconPos: '-297px -100px', type: '1', val: 3},
         // {iconPos: '-556px -100px', type: '1', val: 4}];
 
-        let data = [{ iconPos: '-1729px -100px', type: '0', val: 17 },
-        { iconPos: '-1860px -100px', type: '0', val: 16 },
-        { iconPos: '-35px -100px', type: '1', val: 14 }];
+        // let data = [{ iconPos: '-1729px -100px', type: '0', val: 17 },
+        // { iconPos: '-1860px -100px', type: '0', val: 16 },
+        // { iconPos: '-35px -100px', type: '1', val: 14 }];
 
         // this.mainPlayer.receiveCards(data);
         // this.mainPlayer.turnOverCards();
@@ -135,36 +132,8 @@ class App {
         // this.extraPool.turnOverCards();
         window.app = this;
 
-        const socket = io('http://localhost:3000');
-        socket.on('SEND_ONE_CONNECTED', onConnect);
-        socket.on('SEND_ALL_CONNECTED', onNotifyConnect);
-        socket.on('SEND_ONE_SHUFFLE_CARDS', onShuffleCards);
-        socket.on('SEND_ALL_EXTRACARDS', onExtraCards);
-        socket.on('SEND_ONE_COMPETE', onCompete);
-
-        function onConnect(data) {
-            console.log('connect ' + socket.id + '   msg: ' + JSON.parse(data).message);
-        }
-
-        function onNotifyConnect(data) {
-            let info = JSON.parse(data);
-            console.log('msg: ' + info.message + ' player: ' + info.data.id);
-        }
-
-        function onShuffleCards(data) {
-            let info = JSON.parse(data);
-            console.log('shuffle cards: ' + info.data.cards);
-        }
-
-        function onExtraCards(data) {
-            let info = JSON.parse(data);
-            console.log('extra cards: ' + info.data.cards);
-        }
-
-        function onCompete(data) {
-            let info = JSON.parse(data);
-            console.log('on compete: ' + info.message);
-        }
+        // const socket = io('http://localhost:3000');
+        
     }
 }
 

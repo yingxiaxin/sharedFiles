@@ -7,8 +7,19 @@ class NextPlayer {
         this.cards = [];
         this.cardData = [];
         this.selectedCards = [];
+        this.playerInfo = { id: null, name: null, score: 0, isLord: false};
 
         this.init();
+    }
+
+    /**
+     * 重置信息
+     */
+    reset() {
+        this.cards = [];
+        this.cardData = [];
+        this.selectedCards = [];
+        this.playerInfo = { id: null, name: null, score: 0, isLord: false};
     }
 
     init() {
@@ -30,16 +41,34 @@ class NextPlayer {
     }
 
     /**
+     * 清除手牌区域
+     */
+    clearCardContainer() {
+        this.ele.innerHTML = '';
+    }
+
+    /**
      * 刷新牌，首先重新排序，然后重新生成牌，并重新计算位置
      */
     refresh() {
+        this.clearCardContainer();
         this.sortCards();
         this.renderCards();
         this.arrangeCards();
     }
 
-    dealCards() {
+    dealCards(cards) {
+        this.cardData = this.cardData.filter((item) => {
+            cards.forEach((card) => {
+                if (item.type === card.type && item.val === card.val) {
+                    return false;
+                } else {
+                    return true;
+                }
+            });
+        });
 
+        this.refresh();
     }
 
     /**
@@ -92,6 +121,14 @@ class NextPlayer {
                 return 1;
             }
         });
+    }
+
+    /**
+     * 设置玩家的信息
+     * @param {*} info 
+     */
+    setPlayerInfo(info) {
+        this.playerInfo = Object.assign(this.playerInfo, info);
     }
 
     render() {

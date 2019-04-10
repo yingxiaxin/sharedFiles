@@ -8,6 +8,7 @@ const Constants = {
     SEND_ONE_CONNECTED: 'SEND_ONE_CONNECTED',             // 对当前连接的玩家反馈连接状况
 
     SEND_ALL_BEGIN: 'SEND_ALL_BEGIN',                     // 对所有玩家广播游戏开始
+    SEND_ALL_PLAYERLIST: 'SEND_ALL_PLAYERLIST',           // 向所有玩家发送玩家列表
 
     SEND_ALL_COMPETE: 'SEND_ALL_COMPETE',                 // 对其他玩家广播抢地主信息
     SEND_ALL_COMPETE_END: 'SEND_ALL_COMPETE_END',         // 对所有玩家广播抢地主结果
