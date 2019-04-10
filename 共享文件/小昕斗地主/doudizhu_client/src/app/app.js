@@ -5,8 +5,8 @@ import CardPool from './components/CardPool/CardPool';
 import ExtraPool from './components/ExtraPool/ExtraPool';
 import Clock from './components/Clock/Clock';
 import ButtonBar from './components/ButtonBar/ButtonBar';
-import Connector from './components/Connector';
-import CoreExecutor from './components/CoreExecutor';
+import Connector from './components/Connector/Connector';
+import CoreExecutor from './components/CoreExecutor/CoreExecutor';
 
 class App {
     constructor(id) {

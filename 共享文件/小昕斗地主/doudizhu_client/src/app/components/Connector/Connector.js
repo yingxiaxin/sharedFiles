@@ -7,7 +7,7 @@ class Connector {
         this.coreExecutor = null;
         this.socket = io(config.server);
 
-        initListeners();
+        this.initListeners();
     }
 
     setExecutor(executor) {
@@ -15,44 +15,46 @@ class Connector {
     }
 
     initListeners() {
+        const socket = this.socket;
+
         // 1、服务端发送的本客户端连接的反馈
-        socket.on(Constants.SEND_ONE_CONNECTED, this.onConnect);
+        socket.on(Constants.SEND_ONE_CONNECTED, this.onConnect.bind(this));
 
         // 2、服务端发送的有其他玩家连接入房间的通知
-        socket.on(Constants.SEND_ALL_CONNECTED, this.onNotifyConnect);
+        socket.on(Constants.SEND_ALL_CONNECTED, this.onNotifyConnect.bind(this));
 
         // 3、服务端在人齐了之后，游戏开始前，给客户端发送玩家列表信息
-        socket.on(Constants.SEND_ALL_PLAYERLIST, this.onRcvPlayerList);
+        socket.on(Constants.SEND_ALL_PLAYERLIST, this.onRcvPlayerList.bind(this));
 
         // 4、服务端在人齐了之后发送，提示游戏开始
-        socket.on(Constants.SEND_ALL_BEGIN, this.onBegin);
+        socket.on(Constants.SEND_ALL_BEGIN, this.onBegin.bind(this));
 
         // 5、服务端发送的游戏开始时发牌，有17张牌
-        socket.on(Constants.SEND_ONE_SHUFFLE_CARDS, this.onShuffleCards);
+        socket.on(Constants.SEND_ONE_SHUFFLE_CARDS, this.onShuffleCards.bind(this));
 
         // 6、服务端发送的底牌，每个玩家都会收到，3张
-        socket.on(Constants.SEND_ALL_EXTRACARDS, this.onExtraCards);
+        socket.on(Constants.SEND_ALL_EXTRACARDS, this.onExtraCards.bind(this));
 
         // 7、服务端发送的要求客户端抢地主叫分
-        socket.on(Constants.SEND_ONE_COMPETE, this.onCompete);
+        socket.on(Constants.SEND_ONE_COMPETE, this.onCompete.bind(this));
 
         // 8、服务端发送的其他玩家的抢地主信息
-        socket.on(Constants.SEND_ALL_COMPETE, this.onCompeteInfo);
+        socket.on(Constants.SEND_ALL_COMPETE, this.onCompeteInfo.bind(this));
 
         // 9、服务端发送的抢地主结束，发送地主信息
-        socket.on(Constants.SEND_ALL_COMPETE_END, this.onCompeteEnd);
+        socket.on(Constants.SEND_ALL_COMPETE_END, this.onCompeteEnd.bind(this));
 
         // 10、服务端发送指示某位玩家出牌
-        socket.on(Constants.SEND_ONE_DEAL, this.onPlayerDeal);
+        socket.on(Constants.SEND_ONE_DEAL, this.onPlayerDeal.bind(this));
 
         // 11、服务端发送的玩家出牌信息
-        socket.on(Constants.SEND_ALL_DEAL, this.onOthersDeal);
+        socket.on(Constants.SEND_ALL_DEAL, this.onOthersDeal.bind(this));
 
         // 12、服务端发送的输赢信息
-        socket.on(Constants.SEND_ALL_WIN, this.onWin);
+        socket.on(Constants.SEND_ALL_WIN, this.onWin.bind(this));
 
         // 13、服务端发送的输赢信息
-        socket.on(Constants.SEND_ALL_LOSE, this.onLose);
+        socket.on(Constants.SEND_ALL_LOSE, this.onLose.bind(this));
     }
 
     /********************************************以下是监听的处理函数******************************************************************** */
@@ -71,7 +73,7 @@ class Connector {
     // 收到玩家列表信息
     onRcvPlayerList(data) {
         let info = JSON.parse(data);
-        console.log('收到玩家列表信息: ' + playerList);
+        console.log('收到玩家列表信息: ' + info.data.playerList);
 
         this.coreExecutor.rcvPlayerList(info);
     }
