@@ -243,16 +243,29 @@ class ServerCore {
         let rst = CardData.shuffle();
         let extra = rst[3];         // 底牌
 
+        let shuffled = [];
+
         for (let i = 0; i < 3; i++) {
+            // 把玩家的牌记入实例
             let player = this.playerList[i];
-            player.socket.emit(Constants.SEND_ONE_SHUFFLE_CARDS, JSON.stringify({ message: '发牌', data: { cards: rst[i] } }));
-            player.socket.emit(Constants.SEND_ALL_EXTRACARDS, JSON.stringify({ message: '底牌', data: { cards: extra } }));
+            player.receiveCards(rst[i]);
+
+            // 将玩家及牌的对应做成对象数组
+            let obj = {};
+            obj.playerid = player.id;
+            obj.cards = rst[i];
+            shuffled.push(obj);
         }
+
+        this.playerList.forEach((item) => {
+            item.socket.emit(Constants.SEND_ONE_SHUFFLE_CARDS, JSON.stringify({ message: '发牌', data: { shuffled: shuffled } }));
+            item.socket.emit(Constants.SEND_ALL_EXTRACARDS, JSON.stringify({ message: '底牌', data: { cards: extra } }));
+        });
 
         // 发完牌1秒钟后，开始抢地主
         setTimeout(() => {
             this.startCompete();
-        }, 1000);
+        }, 2000);
     }
 
     /***************************************抢地主部分*********************************************************************************** */
@@ -408,10 +421,10 @@ class ServerCore {
         this.broadcastDealInfo(player);
         let win = this.judgeWin(player);
         if (win) {
-            this.judgewinnerAndLoser();
+            this.judgewinnerAndLoser(player);
             this.endGame();
         } else {
-            assignDealCard();
+            this.assignDealCard();
         }
     }
 
