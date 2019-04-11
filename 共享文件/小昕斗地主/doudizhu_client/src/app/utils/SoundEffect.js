@@ -1,19 +1,17 @@
 class SoundEffect {
     constructor() {
-        this.audio = document.createElement('AUDIO');
-        this.init();
-    }
-
-    init() {
-        this.audio.volume = 0.7;
-        this.audio.loop = false;
-        this.audio.autoplay = true;
+        
     }
 
     play(audioType, gender = 'male') {
+        let audio = document.createElement('AUDIO');
+        audio.volume = 0.7;
+        audio.loop = false;
+        audio.autoplay = true;
+
         let urls = SoundEffect.sound[audioType][gender];
         let url = './../static/audio/' + urls[Math.floor(Math.random() * urls.length)];
-        this.audio.src = url;
+        audio.src = url;
     }
 }
 

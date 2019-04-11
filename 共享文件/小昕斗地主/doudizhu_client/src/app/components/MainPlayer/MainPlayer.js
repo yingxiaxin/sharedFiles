@@ -1,4 +1,6 @@
 import Card from './../Card/Card';
+import { getSoundEffect } from './../../utils/SoundEffect';
+import Constants from '../../utils/Constants';
 
 class MainPlayer {
     constructor(app) {
@@ -8,6 +10,7 @@ class MainPlayer {
         this.cardData = [];
         this.selectedCards = [];
         this.playerInfo = { id: null, name: null, score: 0, isLord: false };
+        this.soundEffect = null;
 
         this.init();
     }
@@ -26,6 +29,7 @@ class MainPlayer {
         let mPlayer = document.createElement('div');
         mPlayer.id = 'mainPlayer';
         this.ele = mPlayer;
+        this.soundEffect = getSoundEffect();
 
         this.addListeners();
         this.render();
@@ -134,14 +138,16 @@ class MainPlayer {
         let i = 0;
         let len = data.length;
         let itv = setInterval(() => {
-            if (i < len - 1) {
+            if (i <= len - 1) {
+                // 每一次动画，播放一次音效
+                this.soundEffect.play(Constants.CHUPAI);
                 this.cardData = this.cardData.concat([data[i]]);
                 this.refresh();
                 i = i + 1;
             } else {
                 clearInterval(itv);
             }
-        }, 500);
+        }, 300);
     }
 
     /**
@@ -170,13 +176,7 @@ class MainPlayer {
      * 4、重置选中牌数组
      */
     dealCards() {
-        let dealcardData = [];
-
         this.selectedCards.forEach((card) => {
-            // 将选中牌区的牌的数据对象放入数组
-            let obj = Object.assign({}, card.cardData);
-            dealcardData.push(obj);
-
             this.cardData = this.cardData.filter((item) => {
                 // 根据判断返回cardData里剩余的牌
                 if (item.type === card.cardData.type && item.val === card.cardData.val) {
@@ -192,6 +192,18 @@ class MainPlayer {
 
         // 3、重置选中牌数组
         this.setSelectedCards();
+    }
+
+    /**
+     * 获取准备出的牌，返回给executor进行判断
+     */
+    prepareToDeal() {
+        let dealcardData = [];
+        this.selectedCards.forEach((card) => {
+            // 将选中牌区的牌的数据对象放入数组
+            let obj = Object.assign({}, card.cardData);
+            dealcardData.push(obj);
+        });
         return dealcardData;
     }
 
@@ -248,11 +260,13 @@ class MainPlayer {
             const nval = parseInt(next.val);
             if (pval < nval) {
                 return 1;
-            } else if (pval === nval) {
+            } else if (pval == nval) {
                 if (ptype > ntype) {
                     return -1;
+                } else {
+                    return 1;
                 }
-            } else {
+            } else if (pval > nval) {
                 return -1;
             }
         });

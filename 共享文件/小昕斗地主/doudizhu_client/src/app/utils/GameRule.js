@@ -90,7 +90,7 @@ class GameRule {
         }
         let m = GameRule.valCount(cards);
         let array = [...m.values()];
-        return m.size() === 2 && (array[0] === 3 || array[0] === 3);
+        return m.size === 2 && (array[0] === 3 || array[0] === 3);
     }
 
     //是否是三带一对
@@ -100,7 +100,7 @@ class GameRule {
         }
         let m = GameRule.valCount(cards);
         let array = [...m.values()];
-        return m.size() === 2 && (array[0] === 3 || array[1] === 3);
+        return m.size === 2 && (array[0] === 3 || array[1] === 3);
     }
 
     //是否是顺子
@@ -210,7 +210,7 @@ class GameRule {
     //是否是四带二
     static isFourWithTwo(cards) {
         let m = GameRule.valCount(cards);
-        if (cards.length != 6 || m.size() > 3) {
+        if (cards.length != 6 || m.size > 3) {
             return false;
         }
         for (let value of m.values()) {
@@ -229,7 +229,7 @@ class GameRule {
         }
 
         let m = GameRule.valCount(cards);
-        if (m.size() != 3) {
+        if (m.size != 3) {
             return false;
         }
 

@@ -42,7 +42,7 @@ class NextPlayer {
         let i = 0;
         let len = data.length;
         let itv = setInterval(() => {
-            if (i < len - 1) {
+            if (i <= len - 1) {
                 this.cardData = this.cardData.concat([data[i]]);
                 this.refresh();
                 i = i + 1;

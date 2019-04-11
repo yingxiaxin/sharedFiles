@@ -22,18 +22,18 @@ class App {
         this.ele = document.createElement('div');
         this.ele.id = 'x_doudizhu';
 
-        // this.initMainPlayer();
-        // this.initPrevPlayer();
-        // this.initNextPlayer();
-        // this.initCardPool();
-        // this.initExtraPool();
-        // this.initClock();
-        // this.initButtonBar();
-        // this.initConnector();
-        // this.initCoreExecutor();
+        this.initMainPlayer();
+        this.initPrevPlayer();
+        this.initNextPlayer();
+        this.initCardPool();
+        this.initExtraPool();
+        this.initClock();
+        this.initButtonBar();
+        this.initConnector();
+        this.initCoreExecutor();
 
-        // this.bindExecutorToConnector();
-        // this.bindExecutorToButtonBar();
+        this.bindExecutorToConnector();
+        this.bindExecutorToButtonBar();
 
         this.render();
     }
@@ -113,19 +113,19 @@ class App {
     render() {
         const container = document.getElementById(this.parentId);
 
-        // this.ele.append(this.mainPlayer.ele);
-        // this.ele.append(this.prevPlayer.ele);
-        // this.ele.append(this.nextPlayer.ele);
-        // this.ele.append(this.cardPool.ele);
-        // this.ele.append(this.extraPool.ele);
-        // this.ele.append(this.clock.ele);
-        // this.ele.append(this.buttonBar.ele);
+        this.ele.append(this.mainPlayer.ele);
+        this.ele.append(this.prevPlayer.ele);
+        this.ele.append(this.nextPlayer.ele);
+        this.ele.append(this.cardPool.ele);
+        this.ele.append(this.extraPool.ele);
+        this.ele.append(this.clock.ele);
+        this.ele.append(this.buttonBar.ele);
         container.append(this.ele);
 
-        let se = getSoundEffect();
-        this.soundEffect = se;
-        this.AlertBox = AlertBox;
-        window.app = this;
+        // let se = getSoundEffect();
+        // this.soundEffect = se;
+        // this.AlertBox = AlertBox;
+        // window.app = this;
 
 
     }

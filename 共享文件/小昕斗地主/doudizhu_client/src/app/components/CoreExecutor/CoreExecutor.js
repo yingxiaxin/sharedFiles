@@ -233,6 +233,8 @@ class CoreExecutor {
                     let status = { message: '大不了', data: { deal: [] } };
                     this.connector.sendDealStatus(status);
 
+                    this.buttonBar.hideAll();
+
                     // 放弃出牌，将手牌区锁加回去
                     this.playerDealLock = true;
                     break;
@@ -244,7 +246,7 @@ class CoreExecutor {
                 }
                 case Constants.DEAL: {
                     // 出牌
-                    let cardData = this.mainPlayer.dealCards();
+                    let cardData = this.mainPlayer.prepareToDeal();
 
                     // 根据规则来判断本次出发是否合法，不合法直接return
                     let legit = this.judgeDealRule(cardData);
@@ -253,12 +255,18 @@ class CoreExecutor {
                         return;
                     }
 
+                    // 通过合规性判断，真正的从玩家手牌区删除这些牌
+                    this.mainPlayer.dealCards();
+
                     // 通过connector发送出牌信息
                     let status = { message: '出牌', data: { deal: cardData } };
                     this.connector.sendDealStatus(status);
 
                     // 出牌到出牌区
                     this._dealToCardPool(cardData);
+
+                    // 隐藏出牌按钮
+                    this.buttonBar.hideAll();
 
                     // 将手牌区锁加上
                     this.playerDealLock = true;
@@ -278,19 +286,29 @@ class CoreExecutor {
         let thisDeal = Rule.typeJudge(cardData);
         let lastDeal = Rule.typeJudge(this.lastDeal);
 
-        // 如果thisDeal为null，说明出牌不合规，返回false
-        if (!thisDeal) {
-            return false;
-        } else {
-            // 只有当本次出牌跟上次其他玩家出牌的：
-            // 1、牌型一致
-            // 2、出牌数一致
-            // 3、本次出牌的最大牌比上次大
-            // 才判定出牌合规，否则都是不合规
-            if (thisDeal.cardKind === lastDeal.cardKind && thisDeal.size === lastDeal.size && thisDeal.val > lastDeal.val) {
-                return true;
-            } else {
+        // lastDeal为空即没有上次出牌数据，说明是本局游戏第一位出牌的
+        // 而且如果本次出牌不为null，说明本次出牌合规，直接return true
+        if (!lastDeal) {
+            if (!thisDeal) {
                 return false;
+            } else {
+                return true;
+            }
+        } else {
+            // 如果thisDeal为null，说明出牌不合规，返回false
+            if (!thisDeal) {
+                return false;
+            } else {
+                // 只有当本次出牌跟上次其他玩家出牌的：
+                // 1、牌型一致
+                // 2、出牌数一致
+                // 3、本次出牌的最大牌比上次大
+                // 才判定出牌合规，否则都是不合规
+                if (thisDeal.cardKind === lastDeal.cardKind && thisDeal.size === lastDeal.size && thisDeal.val > lastDeal.val) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         }
     }

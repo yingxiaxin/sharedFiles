@@ -23,6 +23,8 @@ body {
             height: 100%;
             position: relative;
             user-select: none;
+            background: url(./app/static/table.jpg);
+            background-repeat: repeat;
 
             /*
             * 倒计时钟下的样式
@@ -84,7 +86,7 @@ body {
                 width: 600px;
                 display: flex;
                 justify-content: center;
-                border: 1px solid black;
+                //border: 1px solid black;
                 left: 50%;
                 transform: translate(-50%, 0);
                 bottom: 250px;
@@ -105,8 +107,17 @@ body {
 
                     &:hover {
                         background-color: rgb(12, 138, 235);
-                        font-weight: bold;
                     }
+                }
+
+                .disabled {
+                    background-color: rgb(197, 193, 193);
+                    pointer-events: none;
+                    color: rgb(102, 99, 99);
+                }
+
+                .mousedown {
+                    transform: scale(0.95, 0.95);
                 }
             }
 
@@ -120,7 +131,20 @@ body {
                 left: 40px;
                 top: 50%;
                 transform: translate(0, -50%);
-                border: 1px solid black;
+                //border: 1px solid black;
+            }
+
+            /*
+            * 上一玩家，也就是左侧玩家的区域
+            */
+            #prevPlayer {
+                width: 115px;
+                height: 600px;
+                position: absolute;
+                right: 40px;
+                top: 50%;
+                transform: translate(0, -50%);
+                // border: 1px solid black;
             }
 
             /*
@@ -133,7 +157,7 @@ body {
                 left: 50%;
                 bottom: 20px;
                 transform: translate(-50%, 0);
-                border: 1px solid black;
+                //border: 1px solid black;
                 cursor: pointer;
             }
 
@@ -147,7 +171,7 @@ body {
                 left: 50%;
                 top: 20px;
                 transform: translate(-50%, 0);
-                border: 1px solid black;
+                //border: 1px solid black;
                 cursor: pointer;
             }
 
@@ -161,7 +185,7 @@ body {
                 left: 50%;
                 top: 50%;
                 transform: translate(-50%, -50%);
-                border: 1px solid black;
+                //border: 1px solid black;
                 cursor: pointer;
             }
         }
@@ -174,16 +198,11 @@ body {
         display: none;
     }
 
-    .disabled {
-        background-color: #F5F5F5;
-        pointer-events: none;
-    }
-
     .alertBox {
-        width: 350px;
+        min-width: 300px;
         height: 150px;
         line-height: 150px;
-        font-size: 60px;
+        font-size: 40px;
         position: absolute;
         top: 50%;
         left: 50%;

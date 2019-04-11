@@ -41,6 +41,7 @@ class ButtonBar {
      * 事件代理，通过监听父节点点击情况，确定实际点击target来执行相应的内容
      */
     addListeners() {
+        // 增加点击事件的监听
         const readyDom = this.ele.getElementsByClassName('readyBtn')[0];
         const competeDom = this.ele.getElementsByClassName('competeBtn')[0];
         const dealDom = this.ele.getElementsByClassName('dealCardBtn')[0];
@@ -48,6 +49,20 @@ class ButtonBar {
         readyDom.addEventListener('click', this.readyBtnClick.bind(this));
         competeDom.addEventListener('click', this.competeBtnClick.bind(this));
         dealDom.addEventListener('click', this.dealBtnClick.bind(this));
+
+        // 增加button按钮的mousedown和mouseup监听，主要用来改变样式
+        const spans = Array.from(this.ele.getElementsByTagName('span'));
+        spans.forEach((item) => {
+            item.addEventListener('mousedown', (e) => {
+                let dom = e.target;
+                Util.addClassName(dom, 'mousedown');
+            });
+
+            item.addEventListener('mouseup', (e) => {
+               let dom = e.target;
+               Util.removeClassName(dom, 'mousedown'); 
+            });
+        });
     }
 
     /**
@@ -65,10 +80,7 @@ class ButtonBar {
         switch (target.id) {
             case 'noDeal': {
                 // 调用coreExecutor的方法发送出牌信息
-                this.clickDealStatus({ deal: Constants.NO_DEAL });
-
-                // 在不出牌，或已经出牌后，隐藏按钮
-                this.hideAll();
+                this.clickDealStatus({ deal: Constants.NO_DEAL });                
                 break;
             }
             case 'cancelDeal': {
@@ -79,9 +91,6 @@ class ButtonBar {
             case 'deal': {
                 // 调用coreExecutor的方法发送出牌信息
                 this.clickDealStatus({ deal: Constants.DEAL });
-
-                // 在不出牌，或已经出牌后，隐藏按钮
-                this.hideAll();
                 break;
             }
         }
