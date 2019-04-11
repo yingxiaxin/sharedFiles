@@ -23,9 +23,21 @@ class ExtraPool {
      * @param {*} data 
      */
     receiveCards(data) {
-        this.cardData = this.cardData.concat(data);
+        // this.cardData = this.cardData.concat(data);
 
-        this.refresh();
+        // this.refresh();
+
+        let i = 0;
+        let len = data.length;
+        let itv = setInterval(() => {
+            if (i < len - 1) {
+                this.cardData = this.cardData.concat([data[i]]);
+                this.refresh();
+                i = i + 1;
+            } else {
+                clearInterval(itv);
+            }
+        }, 500);
     }
 
     /**
