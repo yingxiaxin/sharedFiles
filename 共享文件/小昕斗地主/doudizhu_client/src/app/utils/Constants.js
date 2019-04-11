@@ -42,6 +42,21 @@ const Constants = {
     LISTEN_COMPETE: 'LISTEN_COMPETE',                     // 监听玩家抢地主信息
     LISTEN_DEAL: 'LISTEN_DEAL',                           // 监听玩家出牌
     LISTEN_MESSAGE: 'LISTEN_MESSAGE',                     // 监听玩家发送消息
+
+    /***********************************************与音效模块对应的音效类别********************************************************* */
+    ONE: 'one',                                           // 1分音效
+    TWO: 'two',                                           // 2分音效
+    THREE: 'three',                                       // 3分音效
+    NOCOMPETE: 'nocompete',                               // 不叫音效
+    PASS: 'pass',                                         // 要不起音效
+    DEAL: 'deal',                                         // 管上音效
+    CHUPAI: 'chupai',                                     // 打牌音效
+
+    /***********************************************信息弹窗AlertBox对应的类别******************************************************** */
+    WARN: 'warn',
+    WIN: 'win',
+    LOSE: 'lose',
+    INFO: 'info',
 };
 
 export default Constants;

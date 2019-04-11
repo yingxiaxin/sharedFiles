@@ -33,6 +33,10 @@ class Card {
         this.setSelected();
     }
 
+    /**
+     * 设置牌是否反面朝上
+     * @param {*} isback 
+     */
     setBackFace(isback) {
         this.isBackFace = isback;
         if (isback) {

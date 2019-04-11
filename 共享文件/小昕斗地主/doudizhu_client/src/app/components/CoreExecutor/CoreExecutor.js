@@ -1,4 +1,7 @@
 import Constants from "../../utils/Constants";
+import { getSoundEffect } from './../../utils/SoundEffect';
+import Rule from './../../utils/GameRule';
+import AlertBox from '../AlertBox/AlertBox';
 
 class CoreExecutor {
     constructor(app, mainPlayer, prevPlayer, nextPlayer, cardPool, extraPool, clock, buttonBar, connector) {
@@ -12,10 +15,11 @@ class CoreExecutor {
         this.buttonBar = buttonBar;
         this.connector = connector;
 
-        this._playerList = [];
-        this.lastCompete = 0;
-        this.lastCompetor = null;
-        this.playerDealLock = true;
+        this._playerList = [];              // 玩家的列表
+        this.lastCompete = 0;               // 上次玩家叫分分值
+        this.lastCompetor = null;           // 上次叫分的玩家
+        this.lastDeal = [];                 // 上次有玩家出牌的数据
+        this.playerDealLock = true;         // 能否出牌的锁
     }
 
     /***************************************************************************************************************************** */
@@ -125,6 +129,9 @@ class CoreExecutor {
         } else {
             this.buttonBar.hideAll();
             this.connector.sendCompeteStatus(status);
+
+            // 播放音效
+            this.playSound(score + '');
         }
     }
 
@@ -139,6 +146,38 @@ class CoreExecutor {
         this.lastCompete = score;
 
         this.lastCompetor.setPlayerInfo({ score: score });
+
+        // 播放音效
+        this.playSound(score);
+    }
+
+    /**
+     * 根据分数，播放音效
+     */
+    playSound(flag) {
+        let se = getSoundEffect();
+        switch (flag) {
+            case Constants.SCORE_ZERO: {
+                se.play(Constants.NOCOMPETE);
+                break;
+            }
+            case Constants.SCORE_ONE: {
+                se.play(Constants.ONE);
+                break;
+            }
+            case Constants.SCORE_TWO: {
+                se.play(Constants.TWO);
+                break;
+            }
+            case Constants.SCORE_THREE: {
+                se.play(Constants.THREE);
+                break;
+            }
+            case Constants.DEAL: {
+                se.play(Constants.CHUPAI);
+                break;
+            }
+        }
     }
 
     /**
@@ -206,6 +245,15 @@ class CoreExecutor {
                 case Constants.DEAL: {
                     // 出牌
                     let cardData = this.mainPlayer.dealCards();
+
+                    // 根据规则来判断本次出发是否合法，不合法直接return
+                    let legit = this.judgeDealRule(cardData);
+                    if (!legit) {
+                        AlertBox.show('出牌不合规，请重新出牌', Constants.WARN);
+                        return;
+                    }
+
+                    // 通过connector发送出牌信息
                     let status = { message: '出牌', data: { deal: cardData } };
                     this.connector.sendDealStatus(status);
 
@@ -214,8 +262,35 @@ class CoreExecutor {
 
                     // 将手牌区锁加上
                     this.playerDealLock = true;
+
+                    // 播放音效
+                    this.playSound(Constants.DEAL);
                     break;
                 }
+            }
+        }
+    }
+
+    /**
+     * 判断出牌是否合规
+     */
+    judgeDealRule(cardData) {
+        let thisDeal = Rule.typeJudge(cardData);
+        let lastDeal = Rule.typeJudge(this.lastDeal);
+
+        // 如果thisDeal为null，说明出牌不合规，返回false
+        if (!thisDeal) {
+            return false;
+        } else {
+            // 只有当本次出牌跟上次其他玩家出牌的：
+            // 1、牌型一致
+            // 2、出牌数一致
+            // 3、本次出牌的最大牌比上次大
+            // 才判定出牌合规，否则都是不合规
+            if (thisDeal.cardKind === lastDeal.cardKind && thisDeal.size === lastDeal.size && thisDeal.val > lastDeal.val) {
+                return true;
+            } else {
+                return false;
             }
         }
     }
@@ -229,8 +304,17 @@ class CoreExecutor {
         let cardData = info.data.deal;
         let player = this.findPlayerById(playerid);
 
+        // 将本次其他玩家的出牌信息保留
+        this.lastDeal = cardData;
+
+        // 玩家区域的牌减少
         player.dealCards(cardData);
+
+        // 将牌打入出牌区域
         this._dealToCardPool(cardData);
+
+        // 播放音效
+        this.playSound(Constants.DEAL);
     }
 
     /**
@@ -249,7 +333,7 @@ class CoreExecutor {
      * 收到服务端消息，玩家获胜
      */
     rcvWin() {
-        alert('恭喜，你赢了！');
+        AlertBox.show('恭喜，你赢了！', Constants.WIN);
         this.reset();
     }
 
@@ -257,7 +341,7 @@ class CoreExecutor {
      * 收到服务端消息，玩家失败
      */
     rcvLose() {
-        alert('很遗憾，你输了！');
+        AlertBox.show('很遗憾，你输了！', Constants.LOSE);
         this.reset();
     }
 
@@ -269,6 +353,7 @@ class CoreExecutor {
         this._playerList = [];
         this.lastCompete = 0;
         this.lastCompetor = null;
+        this.lastDeal = [];
         this.playerDealLock = true;
 
         // 重置玩家区的信息

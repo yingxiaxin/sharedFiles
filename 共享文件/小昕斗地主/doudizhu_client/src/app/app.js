@@ -8,6 +8,9 @@ import ButtonBar from './components/ButtonBar/ButtonBar';
 import Connector from './components/Connector/Connector';
 import CoreExecutor from './components/CoreExecutor/CoreExecutor';
 
+import { getSoundEffect } from './utils/SoundEffect';
+import AlertBox from './components/AlertBox/AlertBox';
+
 class App {
     constructor(id) {
         this.parentId = id;
@@ -19,18 +22,18 @@ class App {
         this.ele = document.createElement('div');
         this.ele.id = 'x_doudizhu';
 
-        this.initMainPlayer();
-        this.initPrevPlayer();
-        this.initNextPlayer();
-        this.initCardPool();
-        this.initExtraPool();
-        this.initClock();
-        this.initButtonBar();
-        this.initConnector();
-        this.initCoreExecutor();
+        // this.initMainPlayer();
+        // this.initPrevPlayer();
+        // this.initNextPlayer();
+        // this.initCardPool();
+        // this.initExtraPool();
+        // this.initClock();
+        // this.initButtonBar();
+        // this.initConnector();
+        // this.initCoreExecutor();
 
-        this.bindExecutorToConnector();
-        this.bindExecutorToButtonBar();
+        // this.bindExecutorToConnector();
+        // this.bindExecutorToButtonBar();
 
         this.render();
     }
@@ -110,36 +113,21 @@ class App {
     render() {
         const container = document.getElementById(this.parentId);
 
-        this.ele.append(this.mainPlayer.ele);
-        this.ele.append(this.prevPlayer.ele);
-        this.ele.append(this.nextPlayer.ele);
-        this.ele.append(this.cardPool.ele);
-        this.ele.append(this.extraPool.ele);
-        this.ele.append(this.clock.ele);
-        this.ele.append(this.buttonBar.ele);
+        // this.ele.append(this.mainPlayer.ele);
+        // this.ele.append(this.prevPlayer.ele);
+        // this.ele.append(this.nextPlayer.ele);
+        // this.ele.append(this.cardPool.ele);
+        // this.ele.append(this.extraPool.ele);
+        // this.ele.append(this.clock.ele);
+        // this.ele.append(this.buttonBar.ele);
         container.append(this.ele);
 
-        // this.buttonBar.toReadyState();
-        // let data = [{iconPos: '-1729px -100px', type: '0', val: 17},
-        // {iconPos: '-1860px -100px', type: '0', val: 16},
-        // {iconPos: '-35px -100px', type: '1', val: 14},
-        // {iconPos: '-166px -100px', type: '1', val: 15},
-        // {iconPos: '-297px -100px', type: '1', val: 3},
-        // {iconPos: '-556px -100px', type: '1', val: 4}];
-
-        // let data = [{ iconPos: '-1729px -100px', type: '0', val: 17 },
-        // { iconPos: '-1860px -100px', type: '0', val: 16 },
-        // { iconPos: '-35px -100px', type: '1', val: 14 }];
-
-        // this.mainPlayer.receiveCards(data);
-        // this.mainPlayer.turnOverCards();
-
-        // this.extraPool.receiveCards(data);
-        // this.extraPool.turnOverCards();
+        let se = getSoundEffect();
+        this.soundEffect = se;
+        this.AlertBox = AlertBox;
         window.app = this;
 
-        // const socket = io('http://localhost:3000');
-        
+
     }
 }
 

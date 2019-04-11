@@ -7,7 +7,7 @@ class MainPlayer {
         this.cards = [];
         this.cardData = [];
         this.selectedCards = [];
-        this.playerInfo = { id: null, name: null, score: 0, isLord: false};
+        this.playerInfo = { id: null, name: null, score: 0, isLord: false };
 
         this.init();
     }
@@ -19,7 +19,7 @@ class MainPlayer {
         this.cards = [];
         this.cardData = [];
         this.selectedCards = [];
-        this.playerInfo = { id: null, name: null, score: 0, isLord: false};
+        this.playerInfo = { id: null, name: null, score: 0, isLord: false };
     }
 
     init() {
@@ -166,8 +166,8 @@ class MainPlayer {
             dealcardData.push(obj);
 
             this.cardData = this.cardData.filter((item) => {
-                 // 根据判断返回cardData里剩余的牌
-                 if (item.type === card.cardData.type && item.val === card.cardData.val) {
+                // 根据判断返回cardData里剩余的牌
+                if (item.type === card.cardData.type && item.val === card.cardData.val) {
                     return false;
                 } else {
                     return true;
