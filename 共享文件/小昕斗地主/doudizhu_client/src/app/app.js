@@ -7,9 +7,7 @@ import Clock from './components/Clock/Clock';
 import ButtonBar from './components/ButtonBar/ButtonBar';
 import Connector from './components/Connector/Connector';
 import CoreExecutor from './components/CoreExecutor/CoreExecutor';
-
-import { getSoundEffect } from './utils/SoundEffect';
-import AlertBox from './components/AlertBox/AlertBox';
+import ChatBoard from './components/ChatBoard/ChatBoard';
 
 class App {
     constructor(id) {
@@ -31,9 +29,11 @@ class App {
         this.initButtonBar();
         this.initConnector();
         this.initCoreExecutor();
+        this.initChatBoard();
 
         this.bindExecutorToConnector();
         this.bindExecutorToButtonBar();
+        this.bindExecutorToChatBoard();
 
         this.render();
     }
@@ -82,6 +82,11 @@ class App {
         this.buttonBar = buttonBar;
     }
 
+    initChatBoard() {
+        const chatBoard = new ChatBoard(this);
+        this.chatBoard = chatBoard;
+    }
+
     initConnector() {
         const connector = new Connector();
         this.connector = connector;
@@ -97,17 +102,22 @@ class App {
             this.extraPool,
             this.clock,
             this.buttonBar,
-            this.connector
+            this.connector,
+            this.chatBoard
         );
         this.coreExecutor = coreExecutor;
     }
 
     bindExecutorToConnector() {
-        this.connector.setExecutor(this.coreExecutor);
+        this.connector.registerExecutor(this.coreExecutor);
     }
 
     bindExecutorToButtonBar() {
         this.buttonBar.registerExecutor(this.coreExecutor);
+    }
+
+    bindExecutorToChatBoard() {
+        this.chatBoard.registerExecutor(this.coreExecutor);
     }
 
     render() {
@@ -120,14 +130,9 @@ class App {
         this.ele.append(this.extraPool.ele);
         this.ele.append(this.clock.ele);
         this.ele.append(this.buttonBar.ele);
+        this.ele.append(this.chatBoard.ele);
         container.append(this.ele);
-
-        // let se = getSoundEffect();
-        // this.soundEffect = se;
-        // this.AlertBox = AlertBox;
-        // window.app = this;
-
-
+        window.app = this;
     }
 }
 

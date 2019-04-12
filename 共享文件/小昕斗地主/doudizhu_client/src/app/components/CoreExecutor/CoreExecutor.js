@@ -4,7 +4,7 @@ import Rule from './../../utils/GameRule';
 import AlertBox from '../AlertBox/AlertBox';
 
 class CoreExecutor {
-    constructor(app, mainPlayer, prevPlayer, nextPlayer, cardPool, extraPool, clock, buttonBar, connector) {
+    constructor(app, mainPlayer, prevPlayer, nextPlayer, cardPool, extraPool, clock, buttonBar, connector, chatBoard) {
         this.app = app;
         this.mainPlayer = mainPlayer;
         this.prevPlayer = prevPlayer;
@@ -14,11 +14,13 @@ class CoreExecutor {
         this.clock = clock;
         this.buttonBar = buttonBar;
         this.connector = connector;
+        this.chatBoard = chatBoard;
 
         this._playerList = [];              // 玩家的列表
         this.lastCompete = 0;               // 上次玩家叫分分值
         this.lastCompetor = null;           // 上次叫分的玩家
         this.lastDeal = [];                 // 上次有玩家出牌的数据
+        this.lastDealer = null;             // 上次出牌的玩家
         this.playerDealLock = true;         // 能否出牌的锁
     }
 
@@ -177,6 +179,9 @@ class CoreExecutor {
                 se.play(Constants.CHUPAI);
                 break;
             }
+            case Constants.PASS: {
+                se.play(Constants.PASS);
+            }
         }
     }
 
@@ -271,6 +276,10 @@ class CoreExecutor {
                     // 将手牌区锁加上
                     this.playerDealLock = true;
 
+                    // 将lastDeal和lastDealer标识符更新
+                    this.lastDeal = cardData;
+                    this.lastDealer = this.mainPlayer;
+
                     // 播放音效
                     this.playSound(Constants.DEAL);
                     break;
@@ -303,8 +312,10 @@ class CoreExecutor {
                 // 1、牌型一致
                 // 2、出牌数一致
                 // 3、本次出牌的最大牌比上次大
+                // 4、上次出牌人就是mainPlayer(说明mainPlayer上次出的牌一直没人要，所以本次可以随意出牌)
                 // 才判定出牌合规，否则都是不合规
-                if (thisDeal.cardKind === lastDeal.cardKind && thisDeal.size === lastDeal.size && thisDeal.val > lastDeal.val) {
+                if ((thisDeal.cardKind === lastDeal.cardKind && thisDeal.size === lastDeal.size && thisDeal.val > lastDeal.val) ||
+                    this.lastDealer.playerInfo.id === this.mainPlayer.playerInfo.id) {
                     return true;
                 } else {
                     return false;
@@ -322,17 +333,25 @@ class CoreExecutor {
         let cardData = info.data.deal;
         let player = this.findPlayerById(playerid);
 
-        // 将本次其他玩家的出牌信息保留
-        this.lastDeal = cardData;
+        // 1、如果cardData长度为0，表示这个玩家放弃出牌，那么不去重置lastDeal和lastDealer
+        // 2、如果长度大于0，才重置lastDea和lastDealer标识，减少玩家区域的牌，将牌打入出牌区以及播放音效
+        if (cardData.length === 0) {
+            // 播放不要的音效
+            this.playSound(Constants.PASS);
+        } else {
+            // 将本次其他玩家的出牌信息保留
+            this.lastDeal = cardData;
+            this.lastDealer = player;
 
-        // 玩家区域的牌减少
-        player.dealCards(cardData);
+            // 玩家区域的牌减少
+            player.dealCards(cardData);
 
-        // 将牌打入出牌区域
-        this._dealToCardPool(cardData);
+            // 将牌打入出牌区域
+            this._dealToCardPool(cardData);
 
-        // 播放音效
-        this.playSound(Constants.DEAL);
+            // 播放音效
+            this.playSound(Constants.DEAL);
+        }
     }
 
     /**
@@ -372,12 +391,33 @@ class CoreExecutor {
         this.lastCompete = 0;
         this.lastCompetor = null;
         this.lastDeal = [];
+        this.lastDealer = null;
         this.playerDealLock = true;
 
         // 重置玩家区的信息
         this.mainPlayer.reset();
         this.prevPlayer.reset();
         this.nextPlayer.reset();
+    }
+
+    /***************************************************************************************************************************** */
+    /*************************玩家之间发消息聊天************************************************************************************ */
+    /***************************************************************************************************************************** */
+
+    /**
+     * 通过connector发送玩家间的聊天消息
+     * @param {*} msgObj 
+     */
+    sendPlayerMessage(msgObj) {
+        this.connector.sendPlayerMessage(msgObj);
+    }
+
+    /**
+     * 接收玩家的聊天信息
+     * @param {*} info 
+     */
+    rcvPlayerMessage(info) {
+        this.chatBoard.rcvMessage(info);
     }
 
     /***************************************************************************************************************************** */

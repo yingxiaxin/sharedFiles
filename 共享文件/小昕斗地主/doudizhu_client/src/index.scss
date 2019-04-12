@@ -132,6 +132,26 @@ body {
                 top: 50%;
                 transform: translate(0, -50%);
                 //border: 1px solid black;
+
+                &::before {
+                    content: attr(playername);
+                    position: absolute;
+                    height: 40px;
+                    line-height: 40px;
+                    display: block;
+                    padding: 5px 10px;
+                    font-size: 18px;
+                }
+
+                &::after {
+                    content: attr(lord);
+                    position: absolute;
+                    height: 40px;
+                    line-height: 40px;
+                    display: block;
+                    padding: 5px 10px;
+                    font-size: 18px;
+                }
             }
 
             /*
@@ -145,6 +165,26 @@ body {
                 top: 50%;
                 transform: translate(0, -50%);
                 // border: 1px solid black;
+
+                &::before {
+                    content: attr(playername);
+                    position: absolute;
+                    height: 40px;
+                    line-height: 40px;
+                    display: block;
+                    padding: 5px 10px;
+                    font-size: 18px;
+                }
+
+                &::after {
+                    content: attr(lord);
+                    position: absolute;
+                    height: 40px;
+                    line-height: 40px;
+                    display: block;
+                    padding: 5px 10px;
+                    font-size: 18px;
+                }
             }
 
             /*
@@ -159,6 +199,26 @@ body {
                 transform: translate(-50%, 0);
                 //border: 1px solid black;
                 cursor: pointer;
+
+                &::before {
+                    content: attr(playername);
+                    position: absolute;
+                    height: 40px;
+                    line-height: 40px;
+                    display: block;
+                    padding: 5px 10px;
+                    font-size: 18px;
+                }
+
+                &::after {
+                    content: attr(lord);
+                    position: absolute;
+                    height: 40px;
+                    line-height: 40px;
+                    display: block;
+                    padding: 5px 10px;
+                    font-size: 18px;
+                }
             }
 
             /*
@@ -187,6 +247,214 @@ body {
                 transform: translate(-50%, -50%);
                 //border: 1px solid black;
                 cursor: pointer;
+            }
+
+            /*
+            * 聊天信息显示区
+            */
+            #chatBoard {
+                width: 300px;
+                height: 300px;
+                box-sizing: border-box;
+                position: absolute;
+                left: 200px;
+                top: 0;
+                background-color: #151515;
+                border-radius: 5px;
+                box-shadow: 3px 3px 5px 5px rgba(0, 0, 0, 0.5);
+
+                .chatDisplay {
+                    width: 100%;
+                    height: 260px;
+                    box-shadow: 0px -3px 3px 0px rgb(116, 114, 114) inset;
+                    overflow-x: hidden;
+                    overflow-y: auto;
+
+
+                    &::-webkit-scrollbar {
+                        /*滚动条整体样式*/
+                        width: 10px;
+                        /*高宽分别对应横竖滚动条的尺寸*/
+                        height: 1px;
+                    }
+
+                    &::-webkit-scrollbar-thumb {
+                        /*滚动条里面小方块*/
+                        border-radius: 10px;
+                        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+                        background: #535353;
+                    }
+
+                    &::-webkit-scrollbar-track {
+                        /*滚动条里面轨道*/
+                        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+                        border-radius: 10px;
+                        background: #EDEDED;
+                    }
+
+                    /*
+                    * 聊天信息显示区下的每条玩家信息，都放在p标签里
+                    */
+                    p {
+                        width: 100%;
+                        word-wrap: break-word;
+                        word-break: break-all;
+                        white-space: normal;
+                        margin: 3px;
+                        padding: 0;
+                        color: rgb(211, 207, 207);
+
+                        span {
+                            display: inline;
+                            border: none;
+                            line-height: 16px;
+                        }
+
+                        .orange {
+                            color: orange;
+                        }
+
+                        .purple {
+                            color: rgb(245, 44, 245);
+                        }
+
+                        .green {
+                            color: rgb(112, 180, 10);
+                        }
+
+                        .content {
+                            color: rgb(223, 221, 221);
+                        }
+                    }
+                }
+
+                .chatInput {
+                    background: -webkit-linear-gradient(#333, #222);
+                    background: -moz-linear-gradient(#333, #222);
+                    background: -o-linear-gradient(#333, #222);
+                    background: -ms-linear-gradient(#333, #222);
+                    background: linear-gradient(#333, #222);
+                    border: 1px solid rgb(99, 98, 98);
+                    border-radius: 5px 0 0 5px;
+                    box-shadow: 0 2px 0 #000;
+                    color: #fff;
+                    display: block;
+                    float: left;
+                    font-family: 'Cabin', helvetica, arial, sans-serif;
+                    font-size: 13px;
+                    font-weight: 400;
+                    height: 30px;
+                    line-height: 30px;
+                    margin: 0;
+                    padding: 0 10px;
+                    text-shadow: 0 -1px 0 #000;
+                    width: 235px;
+                    margin-top: 5px;
+
+                    &:focus {
+                        -webkit-animation: inputGlow 800ms ease-out infinite alternate;
+                        -moz-animation: inputGlow 800ms ease-out infinite alternate;
+                        -o-animation: inputGlow 800ms ease-out infinite alternate;
+                        -ms-animation: inputGlow 800ms ease-out infinite alternate;
+                        animation: inputGlow 800ms ease-out infinite alternate;
+                        background: #222922;
+                        background: -webkit-linear-gradient(#333933, #222922);
+                        background: -moz-linear-gradient(#333933, #222922);
+                        background: -o-linear-gradient(#333933, #222922);
+                        background: -ms-linear-gradient(#333933, #222922);
+                        background: linear-gradient(#333933, #222922);
+                        border-color: #4F3DF0;
+                        box-shadow: 0 0 5px rgba(11, 22, 236, 0.3), inset 0 0 5px rgba(11, 22, 236, .2), 0 2px 0 #000;
+                        color: #efe;
+                        outline: none;
+
+                        @-webkit-keyframes inputGlow {
+                            0% {
+                                border-color: #4F3DF0;
+                                box-shadow: 0 0 5px rgba(11, 22, 236, 0.3), inset 0 0 5px rgba(11, 22, 236, .2), 0 2px 0 #000;
+                            }
+
+                            100% {
+                                border-color: #4F3DF0;
+                                box-shadow: 0 0 20px rgba(11, 22, 236, .6), inset 0 0 10px rgba(11, 22, 236, .4), 0 2px 0 #000;
+                            }
+                        }
+
+                        @-moz-keyframes inputGlow {
+                            0% {
+                                border-color: #4F3DF0;
+                                box-shadow: 0 0 5px rgba(11, 22, 236, 0.3), inset 0 0 5px rgba(11, 22, 236, .2), 0 2px 0 #000;
+                            }
+
+                            100% {
+                                border-color: #4F3DF0;
+                                box-shadow: 0 0 20px rgba(11, 22, 236, .6), inset 0 0 10px rgba(11, 22, 236, .4), 0 2px 0 #000;
+                            }
+                        }
+
+                        @-o-keyframes inputGlow {
+                            0% {
+                                border-color: #4F3DF0;
+                                box-shadow: 0 0 5px rgba(11, 22, 236, 0.3), inset 0 0 5px rgba(11, 22, 236, .2), 0 2px 0 #000;
+                            }
+
+                            100% {
+                                border-color: #4F3DF0;
+                                box-shadow: 0 0 20px rgba(11, 22, 236, .6), inset 0 0 10px rgba(11, 22, 236, .4), 0 2px 0 #000;
+                            }
+                        }
+
+                        @-ms-keyframes inputGlow {
+                            0% {
+                                border-color: #4F3DF0;
+                                box-shadow: 0 0 5px rgba(11, 22, 236, 0.3), inset 0 0 5px rgba(11, 22, 236, .2), 0 2px 0 #000;
+                            }
+
+                            100% {
+                                border-color: #4F3DF0;
+                                box-shadow: 0 0 20px rgba(11, 22, 236, .6), inset 0 0 10px rgba(11, 22, 236, .4), 0 2px 0 #000;
+                            }
+                        }
+
+                        @keyframes inputGlow {
+                            0% {
+                                border-color: #4F3DF0;
+                                box-shadow: 0 0 5px rgba(11, 22, 236, 0.1), inset 0 0 5px rgba(11, 22, 236, .1), 0 2px 0 #000;
+                            }
+
+                            100% {
+                                border-color: #4F3DF0;
+                                box-shadow: 0 0 20px rgba(11, 22, 236, .9), inset 0 0 10px rgba(11, 22, 236, .8), 0 2px 0 #000;
+                            }
+                        }
+                    }
+                }
+
+                span {
+                    width: 40px;
+                    height: 32px;
+                    line-height: 32px;
+                    box-sizing: border-box;
+                    text-align: center;
+                    display: inline-block;
+                    background-color: white;
+                    margin-top: 5px;
+                    border-radius: 0 5px 5px 0;
+                    cursor: pointer;
+                    font-size: 14px;
+                    color: rgb(223, 221, 221);
+                    background: #151515;
+                    border: 1px solid #444;
+
+                    &:hover {
+                        background: linear-gradient(#393939, #292929);
+                        color: #5f5;
+                    }
+                }
+
+                .mousedown {
+                    transform: scale(0.95, 0.95);
+                }
             }
         }
     }

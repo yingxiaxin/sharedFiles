@@ -278,6 +278,16 @@ class MainPlayer {
      */
     setPlayerInfo(info) {
         this.playerInfo = Object.assign(this.playerInfo, info);
+        this.updatePlayerInfo();
+    }
+
+    /**
+     * 通过设置div的playername和lord属性来更新值
+     * css中伪元素的content属性可以通过content: attr(playername)的方式，动态的更新content内容
+     */
+    updatePlayerInfo() {
+        this.ele.setAttribute('playername', this.playerInfo.id);
+        this.ele.setAttribute('lord', this.playerInfo.isLord ? '地主' : '农民');
     }
 
     render() {

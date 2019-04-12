@@ -25,7 +25,7 @@ class Connector {
 
             // 监听接收玩家消息
             socket.on(Constants.LISTEN_MESSAGE, (data) => {
-                
+                core.rcvPlayerMessage(socket, data);
             });
 
             // 监听接收玩家准备信息

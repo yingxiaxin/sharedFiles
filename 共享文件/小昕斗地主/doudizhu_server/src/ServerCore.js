@@ -486,14 +486,28 @@ class ServerCore {
         this.refresh();
     }
 
-    /******************************************on开头的函数，表示需要进行通知广播********************************************************** */
+    /******************************************玩家消息发送、聊天******************************************************** */
+
+    /**
+     * 每次收到LISTEN_MESSAGE的消息，都进行广播，发送给所有玩家
+     */
+    rcvPlayerMessage(socket, data) {
+        this.playerList.forEach((item) => {
+            item.socket.emit(Constants.SEND_ALL_MESSAGE, data);
+        });
+    }
+
+    /******************************************需要进行通知广播********************************************************** */
     /**
      * 当玩家连接，并且加入了playerList中时，通知其他玩家
      */
     onPlayerConnected(player) {
         let players = this.getPlayersExcept(player);
         players.forEach((item) => {
-            item.socket.emit(Constants.SEND_ALL_CONNECTED, JSON.stringify({ message: '有新玩家连接到当前房间', data: { id: player.id } }));
+            item.socket.emit(Constants.SEND_ALL_CONNECTED, JSON.stringify({
+                message: '有新玩家连接到当前房间',
+                data: { id: player.id, origin: player.origin, address: player.address }
+            }));
         });
     }
 
@@ -505,7 +519,6 @@ class ServerCore {
             item.socket.emit(Constants.SEND_ALL_BEGIN, JSON.stringify({ message: '游戏开始', data: {} }));
         });
     }
-
 }
 
 const getServerCore = (function () {

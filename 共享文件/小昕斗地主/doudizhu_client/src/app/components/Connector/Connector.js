@@ -10,7 +10,7 @@ class Connector {
         this.initListeners();
     }
 
-    setExecutor(executor) {
+    registerExecutor(executor) {
         this.coreExecutor = executor;
     }
 
@@ -55,6 +55,9 @@ class Connector {
 
         // 13、服务端发送的输赢信息
         socket.on(Constants.SEND_ALL_LOSE, this.onLose.bind(this));
+
+        // 14、服务端广播转发的玩家聊天信息
+        socket.on(Constants.SEND_ALL_MESSAGE, this.onPlayerMessage.bind(this));
     }
 
     /********************************************以下是监听的处理函数******************************************************************** */
@@ -157,6 +160,12 @@ class Connector {
         this.coreExecutor.rcvLose();
     }
 
+    // 收到服务端转发广播的玩家聊天信息
+    onPlayerMessage(data) {
+        let info = JSON.parse(data);
+        this.coreExecutor.rcvPlayerMessage(info);
+    }
+
     /********************************************以下是主动往服务端发送的函数*********************************************************** */
 
     /**
@@ -184,6 +193,15 @@ class Connector {
     sendDealStatus(status) {
         let data = JSON.stringify(status);
         this.socket.emit(Constants.LISTEN_DEAL, data);
+    }
+
+    /**
+     * 发送玩家聊天信息
+     * @param {*} message 
+     */
+    sendPlayerMessage(message) {
+        let data = JSON.stringify(message);
+        this.socket.emit(Constants.LISTEN_MESSAGE, data);
     }
 }
 
