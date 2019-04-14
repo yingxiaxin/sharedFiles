@@ -22,6 +22,7 @@ const Constants = {
 
     SEND_ALL_LOSE: 'SEND_ALL_LOSE',                       // 对玩家广播游戏结束
     SEND_ALL_WIN: 'SEND_ALL_WIN',                         // 对玩家提示赢得本局游戏
+    SEND_ALL_ABORT_GAME: 'SEND_ALL_ABORT_GAME',           // 对玩家广播游戏终止
 
     /***********************************************服务端监听接收的事件******************************************************************** */
     LISTEN_CONNECT: 'LISTEN_CONNECT',                     // 监听玩家connect

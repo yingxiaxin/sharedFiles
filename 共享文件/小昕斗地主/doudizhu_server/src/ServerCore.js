@@ -71,7 +71,11 @@ class ServerCore {
         // });
 
         return this.playerList.filter((item) => {
-            return true;
+            if (item.id === player.id) {
+                return false;
+            } else {
+                return true;
+            }
         });
     }
 
@@ -128,6 +132,24 @@ class ServerCore {
     playerConnect(socket) {
         let p = new Player(socket);
         this.addPlayer(p);
+    }
+
+    /**
+     * 有玩家断开连接，游戏终止
+     * @param {*} socket 
+     */
+    playerDisconnect(socket) {
+        let playerid = socket.id;
+        this.playerList = this.playerList.filter((item) => {
+            if (item.id === playerid) {
+                return false;
+            } else {
+                return true;
+            }
+        });
+
+        // 终止游戏
+        this.abortGame();
     }
 
     /**
@@ -481,6 +503,18 @@ class ServerCore {
         this.loser.forEach((item) => {
             item.socket.emit(Constants.SEND_ALL_LOSE, JSON.stringify({ message: '你输了', data: {} }));
         })
+
+        // 将所有数据重置
+        this.refresh();
+    }
+
+    /**
+     * 因意外终止游戏，如玩家掉线等
+     */
+    abortGame() {
+        this.playerList.forEach((item) => {
+            item.socket.emit(Constants.SEND_ALL_ABORT_GAME, JSON.stringify({ message: '玩家断线，游戏终止', data: {} }));
+        });
 
         // 将所有数据重置
         this.refresh();

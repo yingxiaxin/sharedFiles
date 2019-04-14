@@ -10,7 +10,9 @@ class Connector {
     initSocketListener() {
         this.io.on('connection', (socket) => {
 
-            global.console.log('player connected, socket id: ' + socket.id);
+            global.console.log('player connected, socket id: ' + socket.id +
+                ' origin: ' + socket.handshake.headers.origin +
+                ' address: ' + socket.handshake.address);
             // 一个玩家连接到服务器
             core.playerConnect(socket);
 
@@ -21,6 +23,7 @@ class Connector {
             // 监听接收玩家断开连接消息
             socket.on('disconnect', (reason) => {
                 console.log('oooops! A player disconnected');
+                core.playerDisconnect(socket);
             });
 
             // 监听接收玩家消息

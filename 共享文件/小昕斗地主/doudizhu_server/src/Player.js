@@ -19,6 +19,7 @@ class Player {
         this.compete = 0;
         this.giveUpCompete = false;
         this.isLord = false;
+        this.ready = false;
     }
 
     /**
