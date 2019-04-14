@@ -2,10 +2,11 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+    mode: 'development',
     entry: './src/index.js',
     output: {
-        path: __dirname,
-        filename: './release/bundle.js'
+        path: path.join(__dirname, './release'),
+        filename: './bundle.js'
     },
     devtool: 'cheap-module-eval-source-map', // 不同选项适用于不同环境
     module: {
@@ -52,7 +53,7 @@ module.exports = {
 
     plugins: [
         new HtmlWebpackPlugin({
-            template: './index.html'
+            template: 'index.html'
         })
     ],
     devServer: {

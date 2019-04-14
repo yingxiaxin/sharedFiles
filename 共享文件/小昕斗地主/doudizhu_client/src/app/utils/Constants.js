@@ -24,6 +24,7 @@ const Constants = {
 
     SEND_ALL_LOSE: 'SEND_ALL_LOSE',                       // 对玩家广播游戏结束
     SEND_ALL_WIN: 'SEND_ALL_WIN',                         // 对玩家提示赢得本局游戏
+    SEND_ALL_ABORT_GAME: 'SEND_ALL_ABORT_GAME',           // 对玩家广播游戏终止
 
     /***********************************************客户端常量******************************************************************** */
     SCORE_ONE: '1',                                       // 抢地主1分

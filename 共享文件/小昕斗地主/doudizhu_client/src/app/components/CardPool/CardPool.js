@@ -19,6 +19,19 @@ class CardPool {
     }
 
     /**
+     * 重置信息
+     */
+    reset() {
+        this.clearCardContainer();
+        this.cards = [];
+        this.cardData = [];
+    }
+
+    clearCardContainer() {
+        this.ele.innerHTML = '';
+    }
+
+    /**
      * 收到牌，唯独出牌区，收到牌后，直接赋予给cardData，而不是将两个数据连起来
      * @param {*} data 
      */

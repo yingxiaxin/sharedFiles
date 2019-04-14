@@ -58,6 +58,9 @@ class Connector {
 
         // 14、服务端广播转发的玩家聊天信息
         socket.on(Constants.SEND_ALL_MESSAGE, this.onPlayerMessage.bind(this));
+
+        // 15、服务端广播发送玩家掉线，游戏终止
+        socket.on(Constants.SEND_ALL_ABORT_GAME, this.onAbortGame.bind(this));
     }
 
     /********************************************以下是监听的处理函数******************************************************************** */
@@ -164,6 +167,12 @@ class Connector {
     onPlayerMessage(data) {
         let info = JSON.parse(data);
         this.coreExecutor.rcvPlayerMessage(info);
+    }
+
+    // 收到服务器消息，玩家掉线，游戏终止
+    onAbortGame(data) {
+        let info = JSON.parse(data);
+        this.coreExecutor.rcvAbortGame(info);
     }
 
     /********************************************以下是主动往服务端发送的函数*********************************************************** */

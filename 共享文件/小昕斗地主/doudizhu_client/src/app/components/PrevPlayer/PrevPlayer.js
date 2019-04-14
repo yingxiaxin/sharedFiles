@@ -16,10 +16,10 @@ class PrevPlayer {
      * 重置信息
      */
     reset() {
+        this.clearCardContainer();
         this.cards = [];
         this.cardData = [];
         this.selectedCards = [];
-        this.playerInfo = { id: null, name: null, score: 0, isLord: false };
     }
 
     init() {

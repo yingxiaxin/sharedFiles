@@ -136,21 +136,31 @@ body {
                 &::before {
                     content: attr(playername);
                     position: absolute;
-                    height: 40px;
-                    line-height: 40px;
+                    width: 130px;
+                    height: 30px;
+                    line-height: 30px;
                     display: block;
                     padding: 5px 10px;
                     font-size: 18px;
+                    top: -30px;
+                    left: 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
                 }
 
                 &::after {
                     content: attr(lord);
                     position: absolute;
-                    height: 40px;
-                    line-height: 40px;
+                    height: 30px;
+                    line-height: 30px;
                     display: block;
                     padding: 5px 10px;
                     font-size: 18px;
+                    font-weight: bold;
+                    color: rgb(168, 4, 4);
+                    top: -65px;
+                    left: 0;
                 }
             }
 
@@ -169,21 +179,31 @@ body {
                 &::before {
                     content: attr(playername);
                     position: absolute;
-                    height: 40px;
-                    line-height: 40px;
+                    width: 130px;
+                    height: 30px;
+                    line-height: 30px;
                     display: block;
                     padding: 5px 10px;
                     font-size: 18px;
+                    top: -30px;
+                    left: 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
                 }
 
                 &::after {
                     content: attr(lord);
                     position: absolute;
-                    height: 40px;
-                    line-height: 40px;
+                    height: 30px;
+                    line-height: 30px;
                     display: block;
                     padding: 5px 10px;
                     font-size: 18px;
+                    font-weight: bold;
+                    color: rgb(168, 4, 4);
+                    top: -65px;
+                    left: 0;
                 }
             }
 
@@ -203,21 +223,27 @@ body {
                 &::before {
                     content: attr(playername);
                     position: absolute;
-                    height: 40px;
-                    line-height: 40px;
+                    height: 30px;
+                    line-height: 30px;
                     display: block;
                     padding: 5px 10px;
                     font-size: 18px;
+                    top: -35px;
+                    left: 380px;
                 }
 
                 &::after {
                     content: attr(lord);
                     position: absolute;
-                    height: 40px;
-                    line-height: 40px;
+                    height: 30px;
+                    line-height: 30px;
                     display: block;
                     padding: 5px 10px;
                     font-size: 18px;
+                    font-weight: bold;
+                    color: rgb(168, 4, 4);
+                    top: -35px;
+                    left: 300px;
                 }
             }
 

@@ -27,9 +27,9 @@ class App {
         this.initExtraPool();
         this.initClock();
         this.initButtonBar();
+        this.initChatBoard();
         this.initConnector();
         this.initCoreExecutor();
-        this.initChatBoard();
 
         this.bindExecutorToConnector();
         this.bindExecutorToButtonBar();

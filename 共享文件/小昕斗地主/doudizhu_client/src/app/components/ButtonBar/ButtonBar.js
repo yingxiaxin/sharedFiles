@@ -37,6 +37,12 @@ class ButtonBar {
         this.render();
     }
 
+    reset() {
+        let spans = Array.from(this.ele.getElementsByTagName('span'));
+        Util.doFnAll(spans, Util.removeClassName, 'disabled');
+        this.hideAll();
+    }
+
     /**
      * 事件代理，通过监听父节点点击情况，确定实际点击target来执行相应的内容
      */

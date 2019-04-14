@@ -19,6 +19,19 @@ class ExtraPool {
     }
 
     /**
+     * 重置信息
+     */
+    reset() {
+        this.clearCardContainer();
+        this.cards = [];
+        this.cardData = [];
+    }
+
+    clearCardContainer() {
+        this.ele.innerHTML = '';
+    }
+
+    /**
      * 收到牌，将原有的牌数据数组与新收到的数据相结合，并刷新
      * @param {*} data 
      */

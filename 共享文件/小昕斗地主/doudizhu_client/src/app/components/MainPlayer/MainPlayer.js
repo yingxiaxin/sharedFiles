@@ -19,10 +19,10 @@ class MainPlayer {
      * 重置信息
      */
     reset() {
+        this.clearCardContainer();
         this.cards = [];
         this.cardData = [];
         this.selectedCards = [];
-        this.playerInfo = { id: null, name: null, score: 0, isLord: false };
     }
 
     init() {
@@ -79,7 +79,10 @@ class MainPlayer {
         let max = Math.max(mLeft, mRight);
         let swipedCards = this.cards.filter((item) => {
             let leftRim = item.pos.left;
-            let rightRim = item.pos.left + 114;
+            // 两张牌是重叠的，下一张在上一张的基础上偏移60px，那么可以认为：
+            // 在判断鼠标扫过的时候，牌的左边缘是left值，右边缘是左边缘+60px，而不是左边缘+114(牌的宽度)
+            // 否则鼠标扫过的时候，会将叠在底下的牌也选中，而实际上我们并不想选
+            let rightRim = item.pos.left + 60;
             // 当牌的右边缘大于min，并且牌的左边缘小于max，判断牌被鼠标扫过
             if ((rightRim >= min && leftRim <= max)) {
                 return true;

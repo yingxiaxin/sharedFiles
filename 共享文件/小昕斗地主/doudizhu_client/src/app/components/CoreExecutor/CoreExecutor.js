@@ -372,6 +372,7 @@ class CoreExecutor {
     rcvWin() {
         AlertBox.show('恭喜，你赢了！', Constants.WIN);
         this.reset();
+        this.buttonBar.toReadyState();
     }
 
     /**
@@ -379,6 +380,15 @@ class CoreExecutor {
      */
     rcvLose() {
         AlertBox.show('很遗憾，你输了！', Constants.LOSE);
+        this.reset();
+        this.buttonBar.toReadyState();
+    }
+
+    /**
+     * 收到服务端消息，游戏终止
+     */
+    rcvAbortGame() {
+        AlertBox.show('玩家断开连接，游戏终止！', Constants.WARN);
         this.reset();
     }
 
@@ -394,10 +404,13 @@ class CoreExecutor {
         this.lastDealer = null;
         this.playerDealLock = true;
 
-        // 重置玩家区的信息
+        // 重置各个牌区的信息
         this.mainPlayer.reset();
         this.prevPlayer.reset();
         this.nextPlayer.reset();
+        this.cardPool.reset();
+        this.extraPool.reset();
+        this.buttonBar.reset();
     }
 
     /***************************************************************************************************************************** */
