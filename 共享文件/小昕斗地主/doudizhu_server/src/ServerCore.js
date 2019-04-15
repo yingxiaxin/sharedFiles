@@ -215,15 +215,15 @@ class ServerCore {
     readyToStart() {
         // 发送玩家列表
         this.sendPlayerList();
+
+        // 发送游戏可以开始的事件
+        this.onStartGame();
     }
 
     /**
     * 开始游戏，将标识符设为true
     */
     startGame() {
-        // 发送游戏可以开始的事件
-        this.onStartGame();
-
         // 先刷新数据
         this.refresh();
 
@@ -419,7 +419,7 @@ class ServerCore {
         } else {
             // 广播现在是轮到了哪位玩家
             this.playerList.forEach((item) => {
-                item.socket.emit(Constants.SEND_ALL_PLAYER_TURN, json.stringify({ message: '现在轮到某位玩家', data: { playerId: assignedPlayer.id } }));
+                item.socket.emit(Constants.SEND_ALL_PLAYER_TURN, JSON.stringify({ message: '现在轮到某位玩家', data: { playerId: assignedPlayer.id } }));
             });
             assignedPlayer.socket.emit(Constants.SEND_ONE_COMPETE, JSON.stringify({ message: '请叫分', data: { lastCompete: this.lastCompete } }));
         }
