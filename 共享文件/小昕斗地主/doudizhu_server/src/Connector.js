@@ -26,6 +26,11 @@ class Connector {
                 core.playerDisconnect(socket);
             });
 
+            // 监听接收玩家昵称信息
+            socket.on(Constants.LISTEN_PLAYER_NAME, (data) => {
+                core.rcvPlayerName(socket, data);
+            });
+
             // 监听接收玩家消息
             socket.on(Constants.LISTEN_MESSAGE, (data) => {
                 core.rcvPlayerMessage(socket, data);

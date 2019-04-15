@@ -14,7 +14,7 @@ AlertBox.show = function (msg, type = 'info') {
 
     setTimeout(() => {
         body.removeChild(div);
-    }, 1500);
+    }, 2500);
 }
 
 export default AlertBox;

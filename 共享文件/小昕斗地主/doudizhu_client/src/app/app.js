@@ -8,6 +8,7 @@ import ButtonBar from './components/ButtonBar/ButtonBar';
 import Connector from './components/Connector/Connector';
 import CoreExecutor from './components/CoreExecutor/CoreExecutor';
 import ChatBoard from './components/ChatBoard/ChatBoard';
+import NameInput from './components/NameInput/NameInput';
 
 class App {
     constructor(id) {
@@ -40,31 +41,26 @@ class App {
 
     initMainPlayer() {
         const mainPlayer = new MainPlayer(this);
-        mainPlayer.render();
         this.mainPlayer = mainPlayer;
     }
 
     initPrevPlayer() {
         const prevPlayer = new PrevPlayer(this);
-        prevPlayer.render();
         this.prevPlayer = prevPlayer;
     }
 
     initNextPlayer() {
         const nextPlayer = new NextPlayer(this);
-        nextPlayer.render();
         this.nextPlayer = nextPlayer;
     }
 
     initCardPool() {
         const cardPool = new CardPool(this);
-        cardPool.render();
         this.cardPool = cardPool;
     }
 
     initExtraPool() {
         const extraPool = new ExtraPool(this);
-        extraPool.render();
         this.extraPool = extraPool;
     }
 
@@ -72,13 +68,12 @@ class App {
         const clock = new Clock(this);
         this.clock = clock;
         setTimeout(() => {
-            this.clock.countDown('20s');
+            this.clock.countDown('30s');
         }, 500);
     }
 
     initButtonBar() {
         const buttonBar = new ButtonBar(this);
-        buttonBar.render();
         this.buttonBar = buttonBar;
     }
 
@@ -133,6 +128,8 @@ class App {
         this.ele.append(this.chatBoard.ele);
         container.append(this.ele);
         window.app = this;
+
+        NameInput.show(this.connector);
     }
 }
 

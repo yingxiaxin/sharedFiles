@@ -1,6 +1,7 @@
 class Player {
     constructor(socket) {
         this.id = socket.id;                                        // 玩家的socketid
+        this.name = null;                                           // 玩家的昵称
         this.origin = socket.handshake.headers.origin;              // 玩家的连接origin
         this.address = socket.handshake.address;                    // 玩家的ip address
         this.socket = socket;

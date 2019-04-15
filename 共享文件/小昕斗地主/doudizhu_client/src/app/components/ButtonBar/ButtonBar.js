@@ -7,10 +7,21 @@ class ButtonBar {
         this.container = app;
         this.coreExecutor = null;
 
-        this.init();
+        this._init();
     }
 
-    init() {
+    /************************************************************************************************************************* */
+    /****************************************       以下为私有函数(以下划线开头)      ****************************************** */
+    /****************************************       仅在本类内部被调用                ***************************************** */
+    /************************************************************************************************************************ */
+
+    /**
+     * 1、初始化dom结构
+     * 2、增加按钮点击监听
+     * 3、渲染dom
+     * 4、先隐藏所有内容
+     */
+    _init() {
         let btnBar = document.createElement('div');
         btnBar.id = 'buttonBar';
         btnBar.innerHTML = `
@@ -32,29 +43,30 @@ class ButtonBar {
 
         this.ele = btnBar;
 
-        this.addListeners();
+        this._addListeners();
+        this._render();
         this.hideAll();         // 起初先隐藏所有内容
-        this.render();
     }
 
-    reset() {
-        let spans = Array.from(this.ele.getElementsByTagName('span'));
-        Util.doFnAll(spans, Util.removeClassName, 'disabled');
-        this.hideAll();
+    /**
+     * 将此class内的dom结构挂载到游戏主容器div中
+     */
+    _render() {
+        this.container.ele.append(this.ele);
     }
 
     /**
      * 事件代理，通过监听父节点点击情况，确定实际点击target来执行相应的内容
      */
-    addListeners() {
+    _addListeners() {
         // 增加点击事件的监听
         const readyDom = this.ele.getElementsByClassName('readyBtn')[0];
         const competeDom = this.ele.getElementsByClassName('competeBtn')[0];
         const dealDom = this.ele.getElementsByClassName('dealCardBtn')[0];
 
-        readyDom.addEventListener('click', this.readyBtnClick.bind(this));
-        competeDom.addEventListener('click', this.competeBtnClick.bind(this));
-        dealDom.addEventListener('click', this.dealBtnClick.bind(this));
+        readyDom.addEventListener('click', this._readyBtnClick.bind(this));
+        competeDom.addEventListener('click', this._competeBtnClick.bind(this));
+        dealDom.addEventListener('click', this._dealBtnClick.bind(this));
 
         // 增加button按钮的mousedown和mouseup监听，主要用来改变样式
         const spans = Array.from(this.ele.getElementsByTagName('span'));
@@ -65,38 +77,87 @@ class ButtonBar {
             });
 
             item.addEventListener('mouseup', (e) => {
-               let dom = e.target;
-               Util.removeClassName(dom, 'mousedown'); 
+                let dom = e.target;
+                Util.removeClassName(dom, 'mousedown');
             });
         });
+    }
+
+    /**
+     * 准备状态按钮的点击处理函数
+     * @param {*} e 
+     */
+    _readyBtnClick(e) {
+        const event = e || window.event;
+        const target = event.target;
+        if (target.id === 'ready') {
+            // 如果“准备”按钮已经被点击了，那么禁用它
+            this.disableReady();
+
+            // 调用coreExecutor的方法发送准备状态信息
+            this._clickReadyStatus({ isReady: true });
+        } else if (target.id === 'cancelReady') {
+            // 如果“取消准备”按钮被点击，那么取消“准备”按钮的禁用状态
+            this.resetReady();
+
+            // 调用coreExecutor的方法发送准备状态信息
+            this._clickReadyStatus({ isReady: false });
+        }
+    }
+
+    /**
+     * 抢地主状态的点击处理函数
+     * 此函数中不对抢地主按钮进行禁用处理，而是由executor根据收到的上家抢地主分数，来调用函数处理
+     * @param {*} e 
+     */
+    _competeBtnClick(e) {
+        const event = e || window.event;
+        const target = event.target;
+        switch (target.id) {
+            case 'one': {
+                // 调用coreExecutor的方法发送抢地主信息
+                this._clickCompeteStatue({ compete: Constants.SCORE_ONE });
+                break;
+            }
+            case 'two': {
+                // 调用coreExecutor的方法发送抢地主信息
+                this._clickCompeteStatue({ compete: Constants.SCORE_TWO });
+                break;
+            }
+            case 'three': {
+                // 调用coreExecutor的方法发送抢地主信息
+                this._clickCompeteStatue({ compete: Constants.SCORE_THREE });
+                break;
+            }
+            case 'zero': {
+                // 调用coreExecutor的方法发送抢地主信息
+                this._clickCompeteStatue({ compete: Constants.SCORE_ZERO });
+                break;
+            }
+        }
     }
 
     /**
      * 出牌模式的点击处理函数
      * @param {*} e 
      */
-    dealBtnClick(e) {
+    _dealBtnClick(e) {
         const event = e || window.event;
         const target = event.target;
-        const childs = Array.from(target.parentElement.children);
-
-        // 禁用所按的按钮
-        // Util.doFnAll(childs, Util.addClassName, 'disabled');
-        // Util.doFnExcept(childs, target, Util.removeClassName, 'disabled');
         switch (target.id) {
             case 'noDeal': {
                 // 调用coreExecutor的方法发送出牌信息
-                this.clickDealStatus({ deal: Constants.NO_DEAL });                
+                this._clickDealStatus({ deal: Constants.NO_DEAL });
                 break;
             }
             case 'cancelDeal': {
                 // 调用coreExecutor的方法发送出牌信息
-                this.clickDealStatus({ deal: Constants.CANCEL_DEAL });
+                this._clickDealStatus({ deal: Constants.CANCEL_DEAL });
                 break;
             }
             case 'deal': {
                 // 调用coreExecutor的方法发送出牌信息
-                this.clickDealStatus({ deal: Constants.DEAL });
+                this._clickDealStatus({ deal: Constants.DEAL });
                 break;
             }
         }
@@ -106,84 +167,46 @@ class ButtonBar {
      * 通过coreExecutor来调度其他模块执行出牌
      * @param {*} dealStatus 
      */
-    clickDealStatus(dealStatus) {
-        console.log(dealStatus);
+    _clickDealStatus(dealStatus) {
         this.coreExecutor.deal(dealStatus);
     }
 
-    /**
-     * 抢地主状态的点击处理函数
-     * @param {*} e 
-     */
-    competeBtnClick(e) {
-        const event = e || window.event;
-        const target = event.target;
-        const childs = Array.from(target.parentElement.children);
 
-        // 禁用所按的按钮
-        Util.doFnAll(childs, Util.addClassName, 'disabled');
-        Util.doFnExcept(childs, target, Util.removeClassName, 'disabled');
-        switch (target.id) {
-            case 'one': {
-                // 调用coreExecutor的方法发送抢地主信息
-                this.clickCompeteStatue({ compete: Constants.SCORE_ONE });
-                break;
-            }
-            case 'two': {
-                // 调用coreExecutor的方法发送抢地主信息
-                this.clickCompeteStatue({ compete: Constants.SCORE_TWO });
-                break;
-            }
-            case 'three': {
-                // 调用coreExecutor的方法发送抢地主信息
-                this.clickCompeteStatue({ compete: Constants.SCORE_THREE });
-                break;
-            }
-            case 'zero': {
-                // 调用coreExecutor的方法发送抢地主信息
-                this.clickCompeteStatue({ compete: Constants.SCORE_ZERO });
-                break;
-            }
-        }
-    }
 
     /**
      * 通过coreExecutor来调度其他模块执行抢地主后的内容
      * @param {*} competeStatus 
      */
-    clickCompeteStatue(competeStatus) {
-        console.log(competeStatus);
+    _clickCompeteStatue(competeStatus) {
         this.coreExecutor.compete(competeStatus);
     }
 
-    /**
-     * 准备状态按钮的点击处理函数
-     * @param {*} e 
-     */
-    readyBtnClick(e) {
-        const event = e || window.event;
-        const target = event.target;
-        const childs = Array.from(target.parentElement.children);
 
-        // 禁用所按的按钮
-        Util.doFnAll(childs, Util.addClassName, 'disabled');
-        Util.doFnExcept(childs, target, Util.removeClassName, 'disabled');
-        if (target.id === 'ready') {
-            // 调用coreExecutor的方法发送准备状态信息
-            this.clickReadyStatus({ isReady: true });
-        } else if (target.id === 'cancelReady') {
-            // 调用coreExecutor的方法发送准备状态信息
-            this.clickReadyStatus({ isReady: false });
-        }
-    }
 
     /**
      * 通过coreExecutor来调度其他模块执行
      * @param {*} status 
      */
-    clickReadyStatus(status) {
+    _clickReadyStatus(status) {
         this.coreExecutor.sendReadyToServer(status);
     }
+
+    /************************************************************************************************************************ */
+    /****************************************       以下为公有函数           ************************************************* */
+    /****************************************       开放供外部调用函数       ************************************************** */
+    /************************************************************************************************************************ */
+
+    /**
+     * 重置函数
+     * 所有按钮移除禁用class类名，并且隐藏
+     */
+    reset() {
+        let spans = Array.from(this.ele.getElementsByTagName('span'));
+        Util.doFnAll(spans, Util.removeClassName, 'disabled');
+        this.hideAll();
+    }
+
+    /***************************************    准备按钮栏，对外开放的函数     ************************************************ */
 
     /**
      * 切换到准备状态，即只有“准备”和“取消准备”按钮
@@ -198,6 +221,24 @@ class ButtonBar {
     }
 
     /**
+     * 禁用准备按钮
+     */
+    disableReady() {
+        let span = document.getElementById('ready');
+        Util.addClassName(span, 'disabled');
+    }
+
+    /**
+     * 重置准备按钮
+     */
+    resetReady() {
+        let span = document.getElementById('ready');
+        Util.removeClassName(span, 'disabled');
+    }
+
+    /***************************************    叫分按钮栏，对外开放的函数     ************************************************ */
+
+    /**
      * 切换到抢地主状态，即只有“1分”、“2分”、“3分”和“不叫”按钮
      */
     toCompeteState() {
@@ -207,6 +248,34 @@ class ButtonBar {
 
         Util.doFnAll(array, Util.removeClassName, 'hide');
         Util.doFnExcept(array, competeBtn, Util.addClassName, 'hide');
+    }
+
+    /**
+     * 禁用1分按钮
+     */
+    disableOne() {
+        let span = document.getElementById('one');
+        Util.addClassName(span, 'disabled');
+    }
+
+    /**
+     * 禁用1分、2分按钮
+     */
+    disableTwo() {
+        let span1 = document.getElementById('one');
+        let span2 = document.getElementById('two');
+        Util.addClassName(span1, 'disabled');
+        Util.addClassName(span2, 'disabled');
+    }
+
+    /**
+     * 重置叫分按钮的禁用状态
+     */
+    resetCompete() {
+        let span1 = document.getElementById('one');
+        let span2 = document.getElementById('two');
+        Util.removeClassName(span1, 'disabled');
+        Util.removeClassName(span2, 'disabled');
     }
 
     /**
@@ -235,10 +304,6 @@ class ButtonBar {
      */
     registerExecutor(executor) {
         this.coreExecutor = executor;
-    }
-
-    render() {
-        this.container.ele.append(this.ele);
     }
 }
 

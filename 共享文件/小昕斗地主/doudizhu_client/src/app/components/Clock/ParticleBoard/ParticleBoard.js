@@ -24,7 +24,7 @@ class ParticleBoard {
         particleSize = 7,
         density = 6,
         gradientStops = { 0: '#333333', 0.5: '#222222' },
-        particleColor = 'rgba(255, 255, 255, 0.3)',
+        particleColor = 'rgba(255, 255, 255, 0.7)',
         id = null) {
         this.parent = parent;                                           // 粒子信息板的父级DOM容器        
         this.canvas = null;                                             // canvas

@@ -323,6 +323,50 @@ class GameRule {
             return 1;
         }
     }
+
+    /**
+     * 判断出牌是否合规
+     */
+    static judgeDealRule(lastData, thisData, mainPlayerId, lastDealerId) {
+        let thisDeal = Rule.typeJudge(thisData);
+        let lastDeal = Rule.typeJudge(lastData);
+
+        // lastDeal为空即没有上次出牌数据，说明是本局游戏第一位出牌的
+        // 而且如果本次出牌不为null，说明本次出牌合规，直接return true
+        if (!lastDeal) {
+            if (!thisDeal) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            // 如果thisDeal为null，说明出牌不合规，返回false
+            if (!thisDeal) {
+                return false;
+            } else {
+                // 以下几种情况下:
+                // 1、上次出牌人就是mainPlayer(说明mainPlayer上次出的牌一直没人要，所以本次可以随意出牌)
+                // 2、本次出牌是王炸，那么不管上次出什么，本次都可以出牌
+                // 3、本次是炸弹，上次不是，那么本次可以出牌
+                // 4、本次出牌与上次出牌:
+                //      a) 牌型一致
+                //      b) 出牌数一致
+                //      c) 本次出牌的最大牌比上次大
+                // 才判定出牌合规，否则都是不合规
+                if (mainPlayerId === lastDealerId) {
+                    return true;
+                } else if (thisDeal.cardKind === GameRule.KING_BOMB) {
+                    return true;
+                } else if (thisDeal.cardKind === GameRule.BOMB && (lastDeal.cardKind !== GameRule.BOMB || lastDeal.cardKind !== GameRule.KING_BOMB)) {
+                    return true;
+                } else if (thisDeal.cardKind === lastDeal.cardKind && thisDeal.size === lastDeal.size && thisDeal.val > lastDeal.val) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+    }
 }
 
 GameRule.ONE = 1;

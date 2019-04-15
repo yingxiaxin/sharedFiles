@@ -26,6 +26,8 @@ const Constants = {
     SEND_ALL_WIN: 'SEND_ALL_WIN',                         // 对玩家提示赢得本局游戏
     SEND_ALL_ABORT_GAME: 'SEND_ALL_ABORT_GAME',           // 对玩家广播游戏终止
 
+    SEND_ALL_PLAYER_TURN: 'SEND_ALL_PLAYER_TURN',         // 向玩家广播现在轮到谁叫地主或者出牌
+
     /***********************************************客户端常量******************************************************************** */
     SCORE_ONE: '1',                                       // 抢地主1分
     SCORE_TWO: '2',                                       // 抢地主2分  
@@ -43,6 +45,7 @@ const Constants = {
     LISTEN_COMPETE: 'LISTEN_COMPETE',                     // 监听玩家抢地主信息
     LISTEN_DEAL: 'LISTEN_DEAL',                           // 监听玩家出牌
     LISTEN_MESSAGE: 'LISTEN_MESSAGE',                     // 监听玩家发送消息
+    LISTEN_PLAYER_NAME: 'LISTEN_PLAYER_NAME',             // 监听玩家发送昵称
 
     /***********************************************与音效模块对应的音效类别********************************************************* */
     ONE: 'one',                                           // 1分音效

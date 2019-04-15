@@ -7,61 +7,37 @@ class CardPool {
         this.cards = [];
         this.cardData = [];
 
-        this.init();
+        this._init();
     }
 
-    init() {
+    /************************************************************************************************************************* */
+    /****************************************       以下为私有函数(以下划线开头)      ****************************************** */
+    /****************************************       仅在本类内部被调用                ***************************************** */
+    /************************************************************************************************************************ */
+
+    _init() {
         let cardPool = document.createElement('div');
         cardPool.id = 'cardPool';
         this.ele = cardPool;
 
-        this.render();
+        this._render();
     }
 
-    /**
-     * 重置信息
-     */
-    reset() {
-        this.clearCardContainer();
-        this.cards = [];
-        this.cardData = [];
-    }
-
-    clearCardContainer() {
-        this.ele.innerHTML = '';
-    }
-
-    /**
-     * 收到牌，唯独出牌区，收到牌后，直接赋予给cardData，而不是将两个数据连起来
-     * @param {*} data 
-     */
-    receiveCards(data) {
-        this.cardData = data;
-
-        this.refresh();
-    }
-
-    /**
-     * 刷新牌，清除牌区，重新生成牌
-     */
-    refresh() {
-        this.clearPool();
-        this.renderCards();
-        this.turnOverCards();
-        this.arrangeCards();
+    _render() {
+        this.container.ele.append(this.ele);
     }
 
     /**
      * 清除中央的牌区
      */
-    clearPool() {
+    _clearPool() {
         this.ele.innerHTML = '';
     }
 
     /**
      * 将牌翻转
      */
-    turnOverCards() {
+    _turnOverCards() {
         this.cards.forEach((item) => {
             item.setBackFace(false);
         })
@@ -73,7 +49,7 @@ class CardPool {
      * 玩家牌区的宽度设置为1650px
      * 那么第一张牌的left值应为 (1650/2 - (114+(n-1)*80)/2)，以后每张牌递增80
      */
-    arrangeCards() {
+    _arrangeCards() {
         const len = this.cards.length;
         const cardW = 114;
         const deltaW = 80;
@@ -88,15 +64,44 @@ class CardPool {
     /**
      * 遍历数组，根据数据项实例化牌card的实例
      */
-    renderCards() {
+    _renderCards() {
         let cards = this.cardData.map((item) => {
             return new Card(this, item);
         });
         this.cards = cards;
     }
 
-    render() {
-        this.container.ele.append(this.ele);
+    /**
+     * 刷新牌，清除牌区，重新生成牌
+     */
+    _refresh() {
+        this._clearPool();
+        this._renderCards();
+        this._turnOverCards();
+        this._arrangeCards();
+    }
+
+    /************************************************************************************************************************ */
+    /****************************************       以下为公有函数           ************************************************* */
+    /****************************************       开放供外部调用函数       ************************************************** */
+    /************************************************************************************************************************ */
+
+    /**
+     * 收到牌，唯独出牌区，收到牌后，直接赋予给cardData，而不是将两个数据连起来
+     * @param {*} data 
+     */
+    receiveCards(data) {
+        this.cardData = data;
+        this._refresh();
+    }
+
+    /**
+     * 重置信息
+     */
+    reset() {
+        this.clearPool();
+        this.cards = [];
+        this.cardData = [];
     }
 }
 

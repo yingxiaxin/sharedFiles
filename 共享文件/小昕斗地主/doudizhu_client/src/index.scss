@@ -30,11 +30,9 @@ body {
             * 倒计时钟下的样式
             */
             #clock {
-                width: 150px;
-                height: 100px;
+                width: 60px;
+                height: 40px;
                 position: absolute;
-                top: 20px;
-                right: 300px;
                 background-color: #333333;
                 border: 5px solid #272E38;
                 border-radius: 5px;
@@ -336,6 +334,11 @@ body {
                             line-height: 16px;
                         }
 
+                        // 系统消息的颜色
+                        .red {
+                            color: red;
+                        }
+
                         .orange {
                             color: orange;
                         }
@@ -348,6 +351,7 @@ body {
                             color: rgb(112, 180, 10);
                         }
 
+                        // 消息内容的颜色
                         .content {
                             color: rgb(223, 221, 221);
                         }
@@ -492,6 +496,9 @@ body {
         display: none;
     }
 
+    /*
+    * 信息弹窗的样式
+    */
     .alertBox {
         min-width: 300px;
         height: 150px;
@@ -535,6 +542,60 @@ body {
             bottom: 0;
             border-radius: 2px;
         }
+    }
+
+    /*
+    * 昵称输入框的样式
+    */
+    .nameInput {
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        position: absolute;
+        left: 0;
+        top: 0;
+
+        .inputBox {
+            width: 800px;
+            height: 100px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgb(212, 242, 232);
+            box-shadow: 8px 8px 5px 1px rgba(0, 0, 0, .7);
+            border-radius: 5px;
+
+            .inputTip {
+                color: rgb(27, 24, 24);
+                margin: 5px auto;
+                text-align: center;
+            }
+
+            .input {
+                height: 50px;
+                width: 500px;
+                border: none;
+                border-bottom: 1px solid gray;
+                outline: none;
+                line-height: 50px;
+                font-size: 26px;
+                margin-left: 50px;
+                border-radius: 5px 0 0 5px;
+                background: rgb(241, 240, 240);
+                color: gray;
+            }
+
+            .nameInputBtn {
+                height: 55px;
+                width: 60px;
+                font-size: 20px;
+                border-radius: 5px;
+                outline: none;
+                margin-left: -5px;
+            }
+        }
+
     }
 
     .info {

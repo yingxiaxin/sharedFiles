@@ -163,6 +163,19 @@ class ServerCore {
         }
     }
 
+    /*************************************************玩家发送自己的昵称****************************************************************** */
+
+    /**
+     * 接收玩家发送的昵称消息
+     * @param {*} socket 
+     * @param {*} data 
+     */
+    rcvPlayerName(socket, data) {
+        let player = this.findPlayerBySocket(socket);
+        let info = JSON.parse(data);
+        player.name = info.playerName;
+    }
+
     /*************************************************等待准备部分************************************************************************ */
     /**
      * 接收到玩家发送的ready消息
@@ -202,22 +215,23 @@ class ServerCore {
     readyToStart() {
         // 发送玩家列表
         this.sendPlayerList();
-
-        // 发送游戏可以开始的事件
-        this.onStartGame();
     }
 
     /**
     * 开始游戏，将标识符设为true
     */
     startGame() {
+        // 发送游戏可以开始的事件
+        this.onStartGame();
+
         // 先刷新数据
         this.refresh();
 
         this.isPlaying = true;
         global.console.log('游戏开始');
 
-        this.shuffleCards();            // 发牌
+        // 发牌
+        this.shuffleCards();
     }
 
     /**
@@ -249,6 +263,7 @@ class ServerCore {
             p.id = item.id;
             p.origin = item.origin;
             p.address = item.address;
+            p.name = item.name;
             return p;
         });
 
@@ -402,6 +417,10 @@ class ServerCore {
         if (assignedPlayer.giveUpCompete) {
             this.assignCompete();
         } else {
+            // 广播现在是轮到了哪位玩家
+            this.playerList.forEach((item) => {
+                item.socket.emit(Constants.SEND_ALL_PLAYER_TURN, json.stringify({ message: '现在轮到某位玩家', data: { playerId: assignedPlayer.id } }));
+            });
             assignedPlayer.socket.emit(Constants.SEND_ONE_COMPETE, JSON.stringify({ message: '请叫分', data: { lastCompete: this.lastCompete } }));
         }
     }
@@ -424,6 +443,11 @@ class ServerCore {
      */
     assignDealCard() {
         let assignedPlayer = this.playerList[this.getCurrentIndex()];
+
+        // 广播现在是轮到了哪位玩家
+        this.playerList.forEach((item) => {
+            item.socket.emit(Constants.SEND_ALL_PLAYER_TURN, JSON.stringify({ message: '现在轮到某位玩家', data: { playerId: assignedPlayer.id } }));
+        });
         assignedPlayer.socket.emit(Constants.SEND_ONE_DEAL, JSON.stringify({ message: '请出牌', data: {} }));
     }
 
@@ -536,11 +560,10 @@ class ServerCore {
      * 当玩家连接，并且加入了playerList中时，通知其他玩家
      */
     onPlayerConnected(player) {
-        let players = this.getPlayersExcept(player);
-        players.forEach((item) => {
+        this.playerList.forEach((item) => {
             item.socket.emit(Constants.SEND_ALL_CONNECTED, JSON.stringify({
-                message: '有新玩家连接到当前房间',
-                data: { id: player.id, origin: player.origin, address: player.address }
+                message: `有新玩家连接，房间当前在线玩家数: ${this.playerList.length}`,
+                data: { id: player.id, origin: player.origin, address: player.address, name: player.name }
             }));
         });
     }

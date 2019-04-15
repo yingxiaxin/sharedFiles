@@ -4,52 +4,55 @@ import Constants from '../../utils/Constants';
 
 class MainPlayer {
     constructor(app) {
-        this.container = app;
-        this.ele = null;
-        this.cards = [];
-        this.cardData = [];
-        this.selectedCards = [];
-        this.playerInfo = { id: null, name: null, score: 0, isLord: false };
-        this.soundEffect = null;
+        this.container = app;                                                       // 主视角玩家牌区的父节点
+        this.ele = null;                                                            // 主视觉玩家牌区的dom结构
+        this.cards = [];                                                            // 主视觉玩家牌区的牌
+        this.cardData = [];                                                         // 主视角玩家牌区的牌数据
+        this.selectedCards = [];                                                    // 主视角玩家牌区所选中的牌
+        this.playerInfo = { id: null, name: null, score: 0, isLord: false };        // 主视角玩家信息
+        this.soundEffect = null;                                                    // 音效实例
+        this.clockPos = {                                                           // 轮到mainPlayer时，倒计时钟的位置
+            bottom: '196px',
+            right: '300px',
+        }
 
-        this.init();
+        this._init();
     }
 
-    /**
-     * 重置信息
-     */
-    reset() {
-        this.clearCardContainer();
-        this.cards = [];
-        this.cardData = [];
-        this.selectedCards = [];
-    }
+    /************************************************************************************************************************* */
+    /****************************************       以下为私有函数(以下划线开头)      ****************************************** */
+    /****************************************       仅在本类内部被调用                ***************************************** */
+    /************************************************************************************************************************ */
 
-    init() {
+    _init() {
         let mPlayer = document.createElement('div');
         mPlayer.id = 'mainPlayer';
         this.ele = mPlayer;
         this.soundEffect = getSoundEffect();
 
-        this.addListeners();
-        this.render();
+        this._addListeners();
+        this._render();
+    }
+
+    _render() {
+        this.container.ele.append(this.ele);
     }
 
     /**
      * 增加选择牌的鼠标监听事件
      */
-    addListeners() {
-        this.ele.addEventListener('mousedown', onMouseDown.bind(this));
-        this.ele.addEventListener('mouseup', onMouseUp.bind(this));
+    _addListeners() {
+        this.ele.addEventListener('mousedown', _onMouseDown.bind(this));
+        this.ele.addEventListener('mouseup', _onMouseUp.bind(this));
 
         let downX = 0;
         let mouseDownLeft = 0;      // 鼠标按下时相对于此容器的left值
         let mouseUpLeft = 0;        // 鼠标松开时相对于此容器的left值，pos内left介于这两个值之间的牌，被选中
-        function onMouseDown(e) {
+        function _onMouseDown(e) {
             downX = e.clientX;
         }
 
-        function onMouseUp(e) {
+        function _onMouseUp(e) {
             let upX = e.clientX;
 
             // ！！！注意！！！
@@ -60,9 +63,9 @@ class MainPlayer {
             mouseDownLeft = downX > conX ? (downX - conX) : 0;
             mouseUpLeft = upX > conX ? (upX - conX) : 0;
 
-            let swiped = this.judgeSwipedCards(mouseDownLeft, mouseUpLeft);
-            this.handleSwipedCards(swiped);
-            this.setSelectedCards();
+            let swiped = this._judgeSwipedCards(mouseDownLeft, mouseUpLeft);
+            this._handleSwipedCards(swiped);
+            this._setSelectedCards();
         }
     }
 
@@ -74,7 +77,7 @@ class MainPlayer {
      * @param {*} min 鼠标按下时距离容器的left距离
      * @param {*} max 鼠标抬起时距离容器的left距离
      */
-    judgeSwipedCards(mLeft, mRight) {
+    _judgeSwipedCards(mLeft, mRight) {
         let min = Math.min(mLeft, mRight);
         let max = Math.max(mLeft, mRight);
         let swipedCards = this.cards.filter((item) => {
@@ -98,7 +101,7 @@ class MainPlayer {
      * 也就是对上次的选中状态取反
      * @param {*} cardsArray 
      */
-    handleSwipedCards(cardsArray) {
+    _handleSwipedCards(cardsArray) {
         cardsArray.forEach((item) => {
             item.setSelected();
         });
@@ -108,7 +111,7 @@ class MainPlayer {
      * 更新选中的牌数组
      * 遍历每张牌，根据牌的isSelected属性，来判断是否被选中
      */
-    setSelectedCards() {
+    _setSelectedCards() {
         this.selectedCards = this.cards.filter((item) => {
             if (item.isSelected) {
                 return true;
@@ -119,25 +122,107 @@ class MainPlayer {
     }
 
     /**
-     * 将所有选中的牌取消
-     * 用于在出牌阶段，点击“取消”按钮的时候
+     * 刷新牌，首先重新排序，然后重新生成牌，并重新计算位置
      */
-    cancelSelectedCards() {
-        this.selectedCards.forEach((item) => {
-            item.setSelected();
-        });
-        this.setSelectedCards();
+    _refresh() {
+        this._clearCardContainer();
+        this._sortCards();
+        this._renderCards();
+        this._arrangeCards();
+        this._turnOverCards();
     }
+
+    /**
+     * 清除手牌区域
+     */
+    _clearCardContainer() {
+        this.ele.innerHTML = '';
+    }
+
+    /**
+     * 对牌进行排序，按照习惯从左往右依次由大到小
+     * 牌的数据中，花色按类型type区分，那么大小王value值最大，放最左侧
+     * 同val的牌，type值大的放左侧
+     * 数组的排序函数中，排在前面的返回小于0的值，排在后的返回大于0的值
+     */
+    _sortCards() {
+        this.cardData.sort((prev, next) => {
+            const ptype = parseInt(prev.type);
+            const pval = parseInt(prev.val);
+            const ntype = parseInt(next.type);
+            const nval = parseInt(next.val);
+            if (pval < nval) {
+                return 1;
+            } else if (pval == nval) {
+                if (ptype > ntype) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            } else if (pval > nval) {
+                return -1;
+            }
+        });
+    }
+
+    /**
+     * 遍历数组，根据数据项实例化牌card的实例
+     */
+    _renderCards() {
+        let cards = this.cardData.map((item) => {
+            return new Card(this, item);
+        });
+        this.cards = cards;
+    }
+
+    /**
+     * 对牌进行排列
+     * 每张牌的高度是114px，每张牌比上一张移动60px，那么所有牌的总宽度是114+(n-1)*60
+     * 玩家牌区的宽度设置为1650px
+     * 那么第一张牌的left值应为 (1650/2 - (114+(n-1)*60)/2)，以后每张牌递增60
+     */
+    _arrangeCards() {
+        const len = this.cards.length;
+        const cardW = 114;
+        const deltaW = 60;
+        const W = 1650;
+        let left = (W / 2 - (cardW + (len - 1) * deltaW) / 2);
+        this.cards.forEach((item) => {
+            // 将牌的left值记入，等到将来鼠标选牌的时候判断是否选中可以用到
+            item.pos = { left: left };
+            item.ele.style.left = left + 'px';
+            left = left + deltaW;
+        });
+    }
+
+    /**
+     * 玩家区的牌是明牌，需要将遮盖去掉
+     */
+    _turnOverCards() {
+        this.cards.forEach((item) => {
+            item.setBackFace(false);
+        });
+    }
+
+    /**
+     * 通过设置div的playername和lord属性来更新值
+     * css中伪元素的content属性可以通过content: attr(playername)的方式，动态的更新content内容
+     */
+    _updatePlayerInfo() {
+        this.ele.setAttribute('playername', this.playerInfo.id);
+        this.ele.setAttribute('lord', this.playerInfo.isLord ? '地主' : '农民');
+    }
+
+    /************************************************************************************************************************ */
+    /****************************************       以下为公有函数           ************************************************* */
+    /****************************************       开放供外部调用函数       ************************************************** */
+    /************************************************************************************************************************ */
 
     /**
      * 收到牌，将原有的牌数据数组与新收到的数据相结合，并刷新
      * @param {*} data 
      */
     receiveCards(data) {
-        // this.cardData = this.cardData.concat(data);
-
-        // this.refresh();
-
         let i = 0;
         let len = data.length;
         let itv = setInterval(() => {
@@ -145,7 +230,7 @@ class MainPlayer {
                 // 每一次动画，播放一次音效
                 this.soundEffect.play(Constants.CHUPAI);
                 this.cardData = this.cardData.concat([data[i]]);
-                this.refresh();
+                this._refresh();
                 i = i + 1;
             } else {
                 clearInterval(itv);
@@ -154,21 +239,14 @@ class MainPlayer {
     }
 
     /**
-     * 清除手牌区域
+     * 将所有选中的牌取消
+     * 用于在出牌阶段，点击“取消”按钮的时候
      */
-    clearCardContainer() {
-        this.ele.innerHTML = '';
-    }
-
-    /**
-     * 刷新牌，首先重新排序，然后重新生成牌，并重新计算位置
-     */
-    refresh() {
-        this.clearCardContainer();
-        this.sortCards();
-        this.renderCards();
-        this.arrangeCards();
-        this.turnOverCards();
+    cancelSelectedCards() {
+        this.selectedCards.forEach((item) => {
+            item.setSelected();
+        });
+        this._setSelectedCards();
     }
 
     /**
@@ -191,10 +269,10 @@ class MainPlayer {
         });
 
         // 2、刷新手牌区
-        this.refresh();
+        this._refresh();
 
         // 3、重置选中牌数组
-        this.setSelectedCards();
+        this._setSelectedCards();
     }
 
     /**
@@ -211,90 +289,23 @@ class MainPlayer {
     }
 
     /**
-     * 玩家区的牌是明牌，需要将遮盖去掉
-     */
-    turnOverCards() {
-        this.cards.forEach((item) => {
-            item.setBackFace(false);
-        });
-    }
-
-    /**
-     * 对牌进行排列
-     * 每张牌的高度是114px，每张牌比上一张移动60px，那么所有牌的总宽度是114+(n-1)*60
-     * 玩家牌区的宽度设置为1650px
-     * 那么第一张牌的left值应为 (1650/2 - (114+(n-1)*60)/2)，以后每张牌递增60
-     */
-    arrangeCards() {
-        const len = this.cards.length;
-        const cardW = 114;
-        const deltaW = 60;
-        const W = 1650;
-        let left = (W / 2 - (cardW + (len - 1) * deltaW) / 2);
-        this.cards.forEach((item) => {
-            // 将牌的left值记入，等到将来鼠标选牌的时候判断是否选中可以用到
-            item.pos = { left: left };
-            item.ele.style.left = left + 'px';
-            left = left + deltaW;
-        });
-    }
-
-    /**
-     * 遍历数组，根据数据项实例化牌card的实例
-     */
-    renderCards() {
-        let cards = this.cardData.map((item) => {
-            return new Card(this, item);
-        });
-        this.cards = cards;
-    }
-
-    /**
-     * 对牌进行排序，按照习惯从左往右依次由大到小
-     * 牌的数据中，花色按类型type区分，那么大小王value值最大，放最左侧
-     * 同val的牌，type值大的放左侧
-     * 数组的排序函数中，排在前面的返回小于0的值，排在后的返回大于0的值
-     */
-    sortCards() {
-        this.cardData.sort((prev, next) => {
-            const ptype = parseInt(prev.type);
-            const pval = parseInt(prev.val);
-            const ntype = parseInt(next.type);
-            const nval = parseInt(next.val);
-            if (pval < nval) {
-                return 1;
-            } else if (pval == nval) {
-                if (ptype > ntype) {
-                    return -1;
-                } else {
-                    return 1;
-                }
-            } else if (pval > nval) {
-                return -1;
-            }
-        });
-    }
-
-    /**
      * 设置玩家的信息
      * @param {*} info 
      */
     setPlayerInfo(info) {
         this.playerInfo = Object.assign(this.playerInfo, info);
-        this.updatePlayerInfo();
+        this._updatePlayerInfo();
     }
 
     /**
-     * 通过设置div的playername和lord属性来更新值
-     * css中伪元素的content属性可以通过content: attr(playername)的方式，动态的更新content内容
+     * 重置信息
      */
-    updatePlayerInfo() {
-        this.ele.setAttribute('playername', this.playerInfo.id);
-        this.ele.setAttribute('lord', this.playerInfo.isLord ? '地主' : '农民');
-    }
-
-    render() {
-        this.container.ele.append(this.ele);
+    reset() {
+        this._clearCardContainer();
+        this.cards = [];
+        this.cardData = [];
+        this.selectedCards = [];
+        this.setPlayerInfo({ isLord: false });
     }
 }
 

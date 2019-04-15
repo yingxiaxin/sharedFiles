@@ -61,9 +61,14 @@ class Connector {
 
         // 15、服务端广播发送玩家掉线，游戏终止
         socket.on(Constants.SEND_ALL_ABORT_GAME, this.onAbortGame.bind(this));
+
+        // 16、服务端广播现在是轮到哪位玩家叫地主或者出牌
+        socket.on(Constants.SEND_ALL_PLAYER_TURN, this.onPlayerTurn.bind(this));
     }
 
-    /********************************************以下是监听的处理函数******************************************************************** */
+    /********************************************************************************************************************************** */
+    /************************************        以下是监听的处理函数        ************************************************************ */
+    /********************************************************************************************************************************** */
 
     // 本客户端连接的反馈
     onConnect(data) {
@@ -74,6 +79,8 @@ class Connector {
     onNotifyConnect(data) {
         let info = JSON.parse(data);
         console.log('服务端通知: ' + info.message + ' player: ' + info.data.id);
+
+        this.coreExecutor.onPlayerConnect(info);
     }
 
     // 收到玩家列表信息
@@ -175,7 +182,15 @@ class Connector {
         this.coreExecutor.rcvAbortGame(info);
     }
 
-    /********************************************以下是主动往服务端发送的函数*********************************************************** */
+    // 收到服务端消息，现在轮到了某位玩家叫地主或者出牌
+    onPlayerTurn(data) {
+        let info = JSON.parse(data);
+        this.coreExecutor.rcvPlayerTurn(info);
+    }
+
+    /********************************************************************************************************************************** */
+    /************************************        以下是往服务器发送数据的函数       ***************************************************** */
+    /********************************************************************************************************************************** */
 
     /**
      * 发送准备的状态
@@ -211,6 +226,15 @@ class Connector {
     sendPlayerMessage(message) {
         let data = JSON.stringify(message);
         this.socket.emit(Constants.LISTEN_MESSAGE, data);
+    }
+
+    /**
+     * 发送玩家的昵称
+     * @param {*} name 
+     */
+    sendPlayerName(name) {
+        let data = JSON.stringify(name);
+        this.socket.emit(Constants.LISTEN_PLAYER_NAME, data);
     }
 }
 
