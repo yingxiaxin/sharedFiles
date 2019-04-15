@@ -328,8 +328,8 @@ class GameRule {
      * 判断出牌是否合规
      */
     static judgeDealRule(lastData, thisData, mainPlayerId, lastDealerId) {
-        let thisDeal = Rule.typeJudge(thisData);
-        let lastDeal = Rule.typeJudge(lastData);
+        let thisDeal = GameRule.typeJudge(thisData);
+        let lastDeal = GameRule.typeJudge(lastData);
 
         // lastDeal为空即没有上次出牌数据，说明是本局游戏第一位出牌的
         // 而且如果本次出牌不为null，说明本次出牌合规，直接return true

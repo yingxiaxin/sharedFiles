@@ -99,7 +99,7 @@ class CardPool {
      * 重置信息
      */
     reset() {
-        this.clearPool();
+        this._clearPool();
         this.cards = [];
         this.cardData = [];
     }

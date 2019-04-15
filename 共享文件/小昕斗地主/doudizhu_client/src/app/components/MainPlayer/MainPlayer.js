@@ -209,7 +209,7 @@ class MainPlayer {
      * css中伪元素的content属性可以通过content: attr(playername)的方式，动态的更新content内容
      */
     _updatePlayerInfo() {
-        this.ele.setAttribute('playername', this.playerInfo.id);
+        this.ele.setAttribute('playername', this.playerInfo.name ? this.playerInfo.name : this.playerInfo.id);
         this.ele.setAttribute('lord', this.playerInfo.isLord ? '地主' : '农民');
     }
 

@@ -239,7 +239,7 @@ class CoreExecutor {
                     let lastData = this.lastDeal;
                     let thisData = cardData;
                     let mainPlayerId = this.mainPlayer.playerInfo.id;
-                    let lastDealerId = this.lastDealer.playerInfo.id;
+                    let lastDealerId = this.lastDealer ? this.lastDealer.playerInfo.id : 'null';
                     let legit = Rule.judgeDealRule(lastData, thisData, mainPlayerId, lastDealerId);
                     if (!legit) {
                         AlertBox.show('出牌不合规，请重新出牌', Constants.WARN);
@@ -361,6 +361,7 @@ class CoreExecutor {
         this.cardPool.reset();
         this.extraPool.reset();
         this.buttonBar.reset();
+        this.clock.setDefaultPos();
     }
 
     /***************************************************************************************************************************** */
