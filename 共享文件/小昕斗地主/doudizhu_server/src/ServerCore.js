@@ -48,7 +48,6 @@ class ServerCore {
         } else if (this.playerList.length == 2) {
             this.playerList.push(player);
             this.onPlayerConnected(player);
-            this.readyToStart();
         } else if (this.playerList.length < 3) {
             this.playerList.push(player);
             this.onPlayerConnected(player);
@@ -174,6 +173,27 @@ class ServerCore {
         let player = this.findPlayerBySocket(socket);
         let info = JSON.parse(data);
         player.name = info.playerName;
+
+        let hasAllName = this.judgeRcvAllPlayerName();
+        if (hasAllName) {
+            // 人到齐，并且都发送了昵称，那么发送玩家列表信息
+            // 然后发送游戏可以开始的通知，客户端切换到准备按钮界面
+            this.readyToStart();
+        }
+    }
+
+    /**
+     * 判断是否所有玩家都发送了昵称信息
+     */
+    judgeRcvAllPlayerName() {
+        // 如果玩家数小于3个，人没齐，毫无疑问没有收到全部的玩家昵称信息
+        if (this.playerList.length < 3) {
+            return false;
+        } else {
+            return this.playerList.reduce((prev, current) => {
+                return (prev && current.name);
+            }, true);
+        }
     }
 
     /*************************************************等待准备部分************************************************************************ */
